@@ -58,9 +58,9 @@ def derivatives(s: tuple, a_x:float, a_l:float, params: CraneParams):
     sin_th = math.sin(theta)
     cos_th = math.cos(theta)
 
-    theta_ddot = swing(a_x, sin_th, cos_th, l_dot, theta_dot, L, params)
+    theta_ddot = theta_rate(a_x, sin_th, cos_th, l_dot, theta_dot, L, params)
 
-    return tuple(x_dot, a_x, l_dot, a_l, theta_dot, theta_ddot)
+    return (x_dot, a_x, l_dot, a_l, theta_dot, theta_ddot)
 
 
 def hook_point(s: tuple, params: CraneParams) -> tuple:
@@ -71,7 +71,7 @@ def hook_point(s: tuple, params: CraneParams) -> tuple:
 
 def _add_scaled(s,k,h):
     """element-wise s + h*k for 6-tuples"""
-    return tuple(s_i + h *k_i for s_i, k_i in zip(s,k))
+    return (s_i + h *k_i for s_i, k_i in zip(s,k))
 
 def rk4_step(s: tuple, a_x:float, a_l: float, dt: float, params:CraneParams) -> tuple:
     """
@@ -88,5 +88,12 @@ def rk4_step(s: tuple, a_x:float, a_l: float, dt: float, params:CraneParams) -> 
     k3 = derivatives(_add_scaled(s, k2, dt/2), a_x, a_l, params)
     k4 = derivatives(_add_scaled(s, k3, dt), a_x, a_l, params)
     #s_next
-    return tuple([s_i + dt/6 * (k1_i + 2 * k2_i + 2 * k3_i + k4_i) for s_i, k1_i, k2_i, k3_i, k4_i in zip(s, k1, k2, k3, k4)])
+    return ([s_i + dt/6 * (k1_i + 2 * k2_i + 2 * k3_i + k4_i) for s_i, k1_i, k2_i, k3_i, k4_i in zip(s, k1, k2, k3, k4)])
 
+if __name__ == "__main__":
+    print("start")
+    p = CraneParams()
+    print("set p")
+    s= rk4_step((0.0,0.0,4.0,0.0,0.0,0.0), 0.5, 0.0, 0.01, p)
+    print("s calced")
+    print(s)

@@ -39,4 +39,14 @@ def validate_layout(layout: Layout, cfg: ScenarioConfig, params: CraneParams) ->
     """
     return a list of rule violations (Strings); an empty list means the layout is valid.
     """
-    
+    violations = []
+    #start and target
+    if (layout.x_B >= layout.x_A + cfg.min_travel) or (layout.x_B <= params.x_max):
+        violations.append("target out of range")
+    elif cfg.x_A_range[0] <= layout.x_A <= cfg.x_A_range[1]:
+        violations.append("start out of range")
+
+    #stacks
+    if len(layout.stacks) <= cfg.max_stacks:
+        violations.append("number of stacks out of bounds")
+    elif (i in layout.)

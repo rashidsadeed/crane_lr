@@ -8,14 +8,13 @@ import numpy as np
 
 import dynamics as dyn
 import geometry as geo
-from scenarios import ScenarioConfig, sample_layout, layout_rects
+from scenarios import MAX_STACKS, ScenarioConfig, sample_layout, layout_rects
 
 # Actions are SPEED REFERENCES, like a crane operator's joysticks: the drive accelerates toward
 # the reference as fast as its limits allow (the physics still uses accelerations).
 VX_LEVELS = (-1.0, -0.4, -0.1, 0.0, 0.1, 0.4, 1.0)    # trolley speed references [m/s]
 VL_LEVELS = (-0.5, 0.0, 0.15, 0.5)                     # hoist speed references [m/s], + = lowering
 N_ACTIONS = len(VX_LEVELS) * len(VL_LEVELS)            # 28
-MAX_STACKS = 3
 CRASHES = ("collision", "floor_collision", "end_stop", "hard_top_stop", "timeout")
 
 
@@ -31,18 +30,24 @@ class TaskConfig:
     liftoff_eps: float = 0.01
     margin: float = 0.10
     clearance: float = 0.30
-    time_cost: float = 0.1
+    # Reward balance (gamma = 0.995):
+    #   stalling forever costs time_cost / (1 - gamma) = 100 = |r_crash|, so hovering never
+    #   beats trying; and r_success > time_cost * 400 steps + |r_crash|, so even a 40 s delivery
+    #   beats crashing at once. With time_cost = 0.1 the agent learned to hover (stall = -20).
+    time_cost: float = 0.5
     w_swing: float = 0.05
     A_ref: float = 0.30
     w_jerk: float = 0.02
     w_shaping: float = 2.0
     gamma: float = 0.995
-    r_success: float = 100.0
+    r_success: float = 200.0
     r_precision: float = 20.0
     r_crash: float = -100.0
     r_bad_landing: float = -50.0
     max_steps: int = 600
-    timeout_is_failure: bool = True   # not delivering within max_steps ends the episode as a failure
+    timeout_is_failure: bool = False  # False: max_steps truncates (no penalty, the agent bootstraps);
+                                      # True: a -100 failure. The observation has no clock, so True
+                                      # makes the reward non-Markov.
     shaping_gamma: float = 1.0     # 1.0: F = Phi(s') - Phi(s), idling costs the full time cost
                                    # gamma: F = gamma Phi(s') - Phi(s), exactly policy-invariant
     p_air_start: float = 0.0       # probability an episode starts with the container in the air
@@ -64,6 +69,12 @@ class CraneEnv(gym.Env):
         self.scen_cfg = scen_cfg if scen_cfg is not None else ScenarioConfig()
         self.task = task_cfg if task_cfg is not None else TaskConfig()
         p = self.p
+        assert self.scen_cfg.max_stacks <= MAX_STACKS, (
+            f"max_stacks = {self.scen_cfg.max_stacks} > {MAX_STACKS} observation slots")
+        # touchdown detection relies on the floor being exactly at the lower hoist stop:
+        # at l = l_max the hanging container's bottom is at z = 0
+        assert abs(dyn.container_bottom(p.l_max, p)) < 1e-9, (
+            f"H - l_max - h_c = {dyn.container_bottom(p.l_max, p)}, must be 0")
         self.action_space = spaces.Discrete(N_ACTIONS)
         low = np.zeros(7 + 2 * MAX_STACKS)
         high = np.zeros(7 + 2 * MAX_STACKS)
@@ -100,7 +111,9 @@ class CraneEnv(gym.Env):
         self.on_start = True
         if self.np_random.random() < self.task.p_air_start:
             self._air_start()
-        self.prev_cmd = (0.0, 0.0)
+        self.prev_acc = (0.0, 0.0)            # accelerations the drives applied last step
+        self._action = None                   # action index of the current step (None: step_command)
+        self._prev_action = None
         self.ep_return = 0.0
         self.ep_terms = {"time": 0.0, "swing": 0.0, "jerk": 0.0, "shaping": 0.0, "terminal": 0.0}
         self.peak_A = 0.0
@@ -117,13 +130,12 @@ class CraneEnv(gym.Env):
         p, rng, lay = self.p, self.np_random, self.layout
         d_max = min(self.task.air_max_dist, abs(lay.x_B - lay.x_A))
         x = lay.x_B - float(np.sign(lay.x_B - lay.x_A)) * float(rng.uniform(0.0, d_max))
-        half = p.w_c / 2
         under = [st.n_high * p.h_c for st in lay.stacks if abs(st.center - x) < p.w_c + self.task.margin]
         z_lo = max(under, default=0.0) + self.task.clearance
         # reverse curriculum also on height: close starts are also low starts
         z_hi = min(p.H - p.l_min - p.h_c, max(z_lo, 0.3) + 1.0 + self.task.air_max_dist)
         z_b = float(rng.uniform(max(z_lo, 0.3), z_hi))
-        self.state = (x, 0.0, p.H - z_b - p.h_c, 0.0, 0.0, 0.0)
+        self.state = (x, 0.0, p.H - z_b - p.h_c, 0.0, 0.0, 0.0)   # inverse of dyn.container_bottom
         self.on_start = False
 
     def _get_obs(self):
@@ -177,26 +189,25 @@ class CraneEnv(gym.Env):
         return "bad_landing", landing
 
     def _required_height(self, x_p):
-        half = self.p.w_c / 2
-        lo = min(x_p, self.layout.x_B) - half
-        hi = max(x_p, self.layout.x_B) + half
-        tops = [st.n_high * self.p.h_c for st in self.layout.stacks
-                if st.center - half < hi and st.center + half > lo]
-        return max(tops) + self.task.clearance if tops else 0.0
+        stacks = [(st.center, st.n_high * self.p.h_c) for st in self.layout.stacks]
+        ahead = geo.stacks_in_way(x_p, self.layout.x_B, stacks, self.p.w_c)
+        return max(top for _, top in ahead) + self.task.clearance if ahead else 0.0
 
     def _potential(self, s):
         x_p, _ = dyn.payload_center(s, self.p)
-        z_b = self.p.H - s[2] - self.p.h_c
+        z_b = dyn.container_bottom(s[2], self.p)
         h_req = self._required_height(x_p)
         return -(abs(self.layout.x_B - x_p) + max(0.0, h_req - z_b) + max(z_b, h_req))
 
-    def _reward(self, s, s_next, cmd, outcome, landing=None):
+    def _reward(self, s, s_next, acc, outcome, landing=None):
+        """acc = (a_x, a_l) the drives actually applied (after saturation), so the jerk term is
+        bounded by w_jerk per axis and is the same for env.step and env.step_command."""
         task = self.task
         terminal = outcome is not None
         _, _, A = dyn.swing(s_next, self.p)
         swing = -task.w_swing * min(A * A / task.A_ref ** 2, 4.0)
-        jerk = -task.w_jerk * (abs(cmd[0] - self.prev_cmd[0]) / (2 * self.p.ax_max)
-                               + abs(cmd[1] - self.prev_cmd[1]) / (2 * self.p.al_max))
+        jerk = -task.w_jerk * (abs(acc[0] - self.prev_acc[0]) / (2 * self.p.ax_max)
+                               + abs(acc[1] - self.prev_acc[1]) / (2 * self.p.al_max))
         phi_next = 0.0 if terminal else self._potential(s_next)
         shaping = task.w_shaping * (task.shaping_gamma * phi_next - self._potential(s))
         if outcome == "success":
@@ -217,7 +228,11 @@ class CraneEnv(gym.Env):
         and dynamics.saturate clips that to the drive limits."""
         v_x_ref, v_l_ref = self._decode_action(action)
         dt = self.p.dt_ctrl
-        return self.step_command((v_x_ref - self.state[1]) / dt, (v_l_ref - self.state[3]) / dt)
+        self._action = int(action)
+        try:
+            return self.step_command((v_x_ref - self.state[1]) / dt, (v_l_ref - self.state[3]) / dt)
+        finally:
+            self._action = None
 
     def step_command(self, a_x_cmd, a_l_cmd):
         cmd = self._apply_interlock(a_x_cmd, a_l_cmd)
@@ -232,10 +247,18 @@ class CraneEnv(gym.Env):
             outcome = "timeout"
         terminated = outcome is not None
         truncated = not terminated and self.t >= self.task.max_steps
-        reward, terms = self._reward(s, s_next, cmd, outcome, landing)
+        acc = (dyn_info["a_x"], dyn_info["a_l"])      # what the drives applied (saturated)
+        reward, terms = self._reward(s, s_next, acc, outcome, landing)
         self.state = s_next
-        self.switches += cmd != self.prev_cmd
-        self.prev_cmd = cmd
+        # switches: a change of discrete action (env.step), or of the applied acceleration by
+        # more than 10% of the drive limit (env.step_command, continuous controllers)
+        if self._action is not None:
+            self.switches += self._prev_action is not None and self._action != self._prev_action
+        else:
+            self.switches += (abs(acc[0] - self.prev_acc[0]) > 0.1 * self.p.ax_max
+                              or abs(acc[1] - self.prev_acc[1]) > 0.1 * self.p.al_max)
+        self._prev_action = self._action
+        self.prev_acc = acc
         self.peak_A = max(self.peak_A, dyn.swing(s_next, self.p)[2])
         self.effort += (abs(dyn_info["a_x"]) + abs(dyn_info["a_l"])) * self.p.dt_ctrl
         self.ep_return += reward

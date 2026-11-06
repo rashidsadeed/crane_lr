@@ -44,6 +44,8 @@ class Layout(NamedTuple):
     stacks: tuple      # tuple of Stack, 0-3 of them
 
 
+MAX_STACKS = 3        # stack slots in the observation; every layout must fit in them
+
 DEFAULT_WEIGHTS = {"S0": 0.05, "S1": 0.20, "S2": 0.15, "S3": 0.15,
                    "S4": 0.15, "S5": 0.10, "S6": 0.20}
 
@@ -54,7 +56,7 @@ class ScenarioConfig:
     g_min: float = 0.4               # smallest edge-to-edge gap [m]
     g_max: float = 1.5               # largest gap for adjacent placements [m]
     max_high: int = 2                # tallest stack allowed
-    max_stacks: int = 3
+    max_stacks: int = MAX_STACKS     # must not exceed MAX_STACKS
     x_A_range: tuple = (0.0, 2.5)
     min_travel: float = 4.0          # x_B >= x_A + min_travel
     off_path_gap: tuple = (2.0, 3.0) # S5: free gap between target and first stack [m]

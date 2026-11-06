@@ -1,4 +1,6 @@
 """Physics tests for dynamics.py: period, steady angle, slow hoisting, mirror symmetry."""
+import sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))   # add src/ to the search path
 import math
 from dataclasses import replace
 from dynamics import CraneParams, rk4_step, step, payload_center, swing

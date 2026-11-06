@@ -25,6 +25,11 @@ def pendulum_length(l, params):
     return l + params.h_c / 2
 
 
+def container_bottom(l, params):
+    """Height of the container bottom above the floor when hanging straight (theta = 0)."""
+    return params.H - l - params.h_c
+
+
 def theta_accel(a_x, sin_th, cos_th, l_dot, theta_dot, L, params):
     theta_ddot = -(params.g * sin_th + a_x * cos_th + 2.0 * l_dot * theta_dot) / L
     if params.zeta > 0.0:

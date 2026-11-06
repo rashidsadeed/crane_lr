@@ -19,13 +19,14 @@ by about alpha_0 * delta.
 
 Traces are kept sparse: only the (action, tile) pairs touched recently, as two arrays.
 Traces below `trace_min` are dropped (at gamma*lambda = 0.896 that is after ~65 steps),
-so an update costs a few thousand operations instead of one per weight (391,215).
+so an update costs a few thousand operations instead of one per weight
+(26,081 tiles x 28 actions = 730,268 with the default tile coder and action set).
 """
 import numpy as np
 
 
 class SarsaLambda:
-    def __init__(self, n_features: int, n_active: int, n_actions: int = 15,
+    def __init__(self, n_features: int, n_active: int, n_actions: int,
                  alpha: float = 0.1, lam: float = 0.9, gamma: float = 0.995,
                  epsilon: float = 0.2, trace_min: float = 1e-3, explore_hold: int = 1,
                  q_init: float = 0.0, seed: int | None = None):

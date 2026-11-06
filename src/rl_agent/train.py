@@ -75,14 +75,14 @@ class Curriculum:
     full: bool = False
     recent: deque = field(default_factory=lambda: deque(maxlen=200))
 
-    def record(self, success: bool, route: float, s: Settings) -> str | None:
+    def record(self, success: bool, s: Settings) -> str | None:
         self.recent.append(success)
         if len(self.recent) < self.recent.maxlen or np.mean(self.recent) < s.advance_at:
             return None
         self.recent.clear()
         if not self.full:
             self.dist *= s.grow
-            self.full = self.dist >= max(route, 12.0)
+            self.full = self.dist >= 12.0      # longest possible route (rail length x_max)
             return f"starts within {min(self.dist, 12.0):.1f} m of the target"
         if self.p_air > 0:
             self.p_air = max(0.0, self.p_air - s.p_step)
@@ -176,7 +176,6 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
             env.task = replace(base, p_air_start=cur.p_air, air_max_dist=cur.dist)
             # deterministic episode seed (Python's hash() of strings changes between runs)
             obs, info = env.reset(seed=st["seed"] * 10_000_000 + st["stage_i"] * 1_000_000 + ep)
-            route = abs(info["layout"].x_B - info["layout"].x_A)
             a = agent.begin_episode(tc.active(compute_features(obs, p)))
             while True:
                 obs, r, term, trunc, info = env.step(a)
@@ -187,7 +186,7 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
             window.append(e)
             st["ep"] += 1
             st["total_ep"] += 1
-            msg = cur.record(e["outcome"] == "success", route, s)
+            msg = cur.record(e["outcome"] == "success", s)
             if msg:
                 if st.get("ep_adv") is None:
                     st["ep_adv"] = st["ep"]

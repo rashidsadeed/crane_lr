@@ -23,7 +23,7 @@ expected = np.array([1.0, 0, 8.0, 0, 0, 0,  7.0,  3.6, 2.0,  10.4, 4.0,  0, 0])
 check("R1 observation for a given layout", np.allclose(obs, expected), f"\n      {obs}")
 check("R2 info carries the layout", info["layout"] == L)
 check("R3 observation inside the observation space", env.observation_space.contains(obs))
-check("R4 bookkeeping reset", env.t == 0 and env.on_start and env.prev_cmd == (0.0, 0.0))
+check("R4 bookkeeping reset", env.t == 0 and env.on_start and env.prev_acc == (0.0, 0.0))
 
 # same seed -> same episode; different seed -> different episode
 o1, _ = env.reset(seed=42)

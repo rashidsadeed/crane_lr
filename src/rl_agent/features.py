@@ -1,9 +1,10 @@
 """feature extraction: raw observation (13 values) -> 12 relative features for tile coding"""
 import math
 import numpy as np
-from dynamics import CraneParams
+from dynamics import CraneParams, container_bottom, pendulum_length
+import geometry as geo
+from scenarios import MAX_STACKS, ScenarioConfig
 
-MAX_STACKS = 3
 G_NEXT_OPEN = 5.0      # g_next when no stack blocks the way [m]
 G_SIDE_OPEN = 3.0      # g_side when the target has no neighbour within this distance [m]
 
@@ -18,7 +19,7 @@ def warp(u: float) -> float:
 def unpack(obs, params: CraneParams) -> dict:
     """Raw observation -> named physical quantities used by the features"""
     x, x_dot, l, l_dot, theta, theta_dot = (float(v) for v in obs[:6])
-    L = l + params.h_c / 2                                     # pendulum length
+    L = pendulum_length(l, params)
     sin_th, cos_th = math.sin(theta), math.cos(theta)
     stacks = [(float(obs[7 + 2 * i]), float(obs[8 + 2 * i]))   # (centre, top height)
               for i in range(MAX_STACKS) if obs[8 + 2 * i] > 0] # skip empty slots
@@ -26,7 +27,7 @@ def unpack(obs, params: CraneParams) -> dict:
         "x": x, "x_dot": x_dot, "l": l, "l_dot": l_dot, "L": L,
         "x_B": float(obs[6]),
         "x_p": x + L * sin_th,                                  # container centre
-        "z_b": params.H - l - params.h_c,                       # container bottom
+        "z_b": container_bottom(l, params),                     # container bottom
         "d": L * sin_th,                                        # swing displacement
         "v_d": l_dot * sin_th + L * theta_dot * cos_th,         # its rate
         "stacks": stacks,
@@ -55,9 +56,7 @@ def _overlaps(c: float, lo: float, hi: float, half: float) -> bool:
 def stacks_in_way(q: dict, half: float) -> list:
     """Stacks whose footprint overlaps the strip the container still has to sweep:
         strip = [min(x_p, x_B) - half, max(x_p, x_B) + half]"""
-    lo = min(q["x_p"], q["x_B"]) - half
-    hi = max(q["x_p"], q["x_B"]) + half
-    return [(c, top) for c, top in q["stacks"] if _overlaps(c, lo, hi, half)]
+    return geo.stacks_in_way(q["x_p"], q["x_B"], q["stacks"], 2 * half)
 
 
 def path_features(q: dict, params: CraneParams) -> tuple:
@@ -106,10 +105,13 @@ def target_features(q: dict, params: CraneParams) -> tuple:
     return g_side, h_side
 
 
-def feature_ranges(params: CraneParams, max_top: float = 4.0) -> tuple:
+def feature_ranges(params: CraneParams, max_top: float | None = None) -> tuple:
     """(low, high) per feature, in the same order as FEATURE_NAMES.
     The tile coder spreads its tiles over these ranges and clips values outside them.
-    Warped features get warped bounds."""
+    Warped features get warped bounds. max_top defaults to the tallest stack the default
+    scenario config allows (max_high * h_c = 4 m)."""
+    if max_top is None:
+        max_top = ScenarioConfig().max_high * params.h_c
     z_max = params.H - params.l_min - params.h_c                 # highest bottom: 6.5 m
     return (
         (warp(-2.0), warp(params.x_max)),                         # e_x   (m, warped)

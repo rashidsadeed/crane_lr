@@ -7,7 +7,7 @@ from collections import Counter                      # noqa: E402
 import numpy as np                                   # noqa: E402
 from gymnasium.utils.env_checker import check_env    # noqa: E402
 
-from env import CraneEnv                             # noqa: E402
+from env import CraneEnv, N_ACTIONS, VX_LEVELS, VL_LEVELS   # noqa: E402
 from scenarios import Layout, Stack                  # noqa: E402
 
 results = []
@@ -18,8 +18,13 @@ def check(name, ok, detail=""):
     print(f"{'PASS' if ok else 'FAIL'}  {name}  {detail}")
 
 
-HOLD, UP, DOWN = 7, 6, 8                    # trolley 0 with hoist hold / up / down
-RIGHT_UP, RIGHT, LEFT = 12, 13, 1           # trolley +0.5 & up, +0.5 & hold, -0.5 & hold
+def act(vx, vl):
+    """Action index for a (trolley, hoist) speed-reference pair; hoist + = lowering."""
+    return VX_LEVELS.index(vx) * len(VL_LEVELS) + VL_LEVELS.index(vl)
+
+
+HOLD, UP, DOWN = act(0.0, 0.0), act(0.0, -0.5), act(0.0, 0.15)    # trolley 0, hoist hold / up / down
+RIGHT, LEFT = act(0.4, 0.0), act(-0.4, 0.0)                       # trolley +-0.4 m/s, hoist hold
 
 env = CraneEnv()
 p = env.p
@@ -92,10 +97,10 @@ def hover(l_dot):
         env.state = (8.0, 0.0, p.l_max - 0.05, l_dot, 0.0, 0.0)   # 5 cm above the floor
         env.on_start = False
     return setup
-ep, r = run(Layout("S0", 1.0, 8.0, ()), [HOLD], setup=hover(0.1))
+ep, r = run(Layout("S0", 1.0, 8.0, ()), [DOWN], setup=hover(0.1))   # keep lowering at 0.15 m/s
 check("S7 gentle lowering at the target -> success", ep["outcome"] == "success",
       f"outcome={ep['outcome']}, landing={ep['landing']}, last reward={r:.1f}")
-ep, r = run(Layout("S0", 1.0, 8.0, ()), [HOLD], setup=hover(0.3))
+ep, r = run(Layout("S0", 1.0, 8.0, ()), [HOLD], setup=hover(0.3))   # brakes, still lands at > 0.2 m/s
 check("S8 lowering at 0.3 m/s -> bad landing", ep["outcome"] == "bad_landing"
       and ep["landing"]["failed"] == ["v_land"], f"failed={ep['landing']['failed']}")
 
@@ -106,7 +111,7 @@ ok_space = True
 for i in range(200):
     obs, _ = env.reset(seed=i)
     while True:
-        obs, r, term, trunc, info = env.step(int(rng.integers(15)))
+        obs, r, term, trunc, info = env.step(int(rng.integers(N_ACTIONS)))
         ok_space &= env.observation_space.contains(obs) or bool(term)
         if term or trunc:
             outcomes[info["episode"]["outcome"]] += 1
@@ -120,7 +125,7 @@ def rollout(seed):
     a_rng = np.random.default_rng(seed)
     traj = [obs]
     for _ in range(100):
-        obs, r, term, trunc, _ = env.step(int(a_rng.integers(15)))
+        obs, r, term, trunc, _ = env.step(int(a_rng.integers(N_ACTIONS)))
         traj.append(obs)
         if term or trunc:
             break

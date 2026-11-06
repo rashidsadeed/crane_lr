@@ -1,4 +1,6 @@
 """Hand-checked tests for geometry.py."""
+import sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))   # add src/ to the search path
 import math
 from dynamics import CraneParams, payload_center
 from geometry import (Rect, stack_rect, rect_corners, container_corners,

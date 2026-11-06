@@ -77,6 +77,13 @@ def lowest_z(corners) -> float:
     return min(point[1] for point in corners)
 
 
-
-
-
+def stacks_in_way(x_p: float, x_B: float, stacks, w_c: float) -> list:
+    """
+    Stacks whose footprint overlaps the strip the container still has to sweep:
+        strip = [min(x_p, x_B) - w_c/2, max(x_p, x_B) + w_c/2]
+    stacks: iterable of (centre, top height). Returns the overlapping (centre, top) pairs.
+    Shared by the environment's shaping, the baseline controller and the agent's features.
+    """
+    half = w_c / 2
+    lo, hi = min(x_p, x_B) - half, max(x_p, x_B) + half
+    return [(c, top) for c, top in stacks if c - half < hi and c + half > lo]

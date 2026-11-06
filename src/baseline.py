@@ -27,7 +27,9 @@ edge reaches the first stack in its way (lift and travel overlap when there is r
 from dataclasses import dataclass
 import math
 
-from dynamics import CraneParams, pendulum_length
+from dynamics import CraneParams, container_bottom, pendulum_length
+from geometry import stacks_in_way
+from scenarios import MAX_STACKS
 
 
 @dataclass(frozen=True)
@@ -118,7 +120,7 @@ class BaselineController:
         """Call once per episode with the first observation."""
         self.x_B = float(obs[6])
         self.stacks = [(float(obs[7 + 2 * i]), float(obs[8 + 2 * i]))   # (centre, top height)
-                       for i in range(3) if obs[8 + 2 * i] > 0]
+                       for i in range(MAX_STACKS) if obs[8 + 2 * i] > 0]
         self.t = 0.0
         self.profile = None        # created when travel starts
         self.t_travel = 0.0
@@ -130,9 +132,7 @@ class BaselineController:
     # ------------------------------------------------------------------ helpers
     def _stacks_in_way(self, x_p: float):
         """Stacks whose footprint overlaps the strip the container still has to sweep."""
-        half = self.p.w_c / 2
-        lo, hi = min(x_p, self.x_B) - half, max(x_p, self.x_B) + half
-        return [(c, top) for c, top in self.stacks if c - half < hi and c + half > lo]
+        return stacks_in_way(x_p, self.x_B, self.stacks, self.p.w_c)
 
     def _z_cmd(self, x_p: float) -> float:
         """Height the container bottom should be at now."""
@@ -168,7 +168,7 @@ class BaselineController:
         x, x_dot, l, l_dot, th, th_dot = (float(v) for v in obs[:6])
         L = pendulum_length(l, p)
         x_p = x + L * math.sin(th)
-        z_b = p.H - l - p.h_c
+        z_b = container_bottom(l, p)
 
         # ---- trolley
         if self.profile is None and self._may_start_travel(x_p, z_b):

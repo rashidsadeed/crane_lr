@@ -1,0 +1,52 @@
+=== stage C0  (episode 0 of at most 40000) ===
+C0 ep    500  train  0.0%  ret  -324.4  eps 0.100  start<= 0.5 m air 100%  {'floor_collision': 48, 'bad_landing': 17, 'timeout': 242, 'end_stop': 108, 'hard_top_stop': 85}
+C0 ep   1000  train  0.0%  ret  -160.9  eps 0.100  start<= 0.5 m air 100%  {'timeout': 37, 'end_stop': 136, 'floor_collision': 175, 'bad_landing': 152}
+C0 ep   1500  train 13.0%  ret   -46.2  eps 0.100  start<= 0.5 m air 100%  {'floor_collision': 70, 'bad_landing': 345, 'end_stop': 20, 'success': 65}
+C0 ep   2000  train 29.6%  ret     4.3  eps 0.100  start<= 0.5 m air 100%  {'success': 148, 'bad_landing': 329, 'floor_collision': 21, 'end_stop': 2}
+C0 ep   2500  train 45.8%  ret    47.5  eps 0.100  start<= 0.5 m air 100%  {'success': 229, 'bad_landing': 255, 'floor_collision': 14, 'end_stop': 2}
+C0 ep   3000  train 55.2%  ret    70.4  eps 0.100  start<= 0.5 m air 100%  {'success': 276, 'bad_landing': 209, 'floor_collision': 15}
+   C0 ep 3174: curriculum -> starts within 0.8 m of the target
+C0 ep   3500  train 52.0%  ret    53.0  eps 0.098  start<= 0.8 m air 100%  {'success': 260, 'bad_landing': 208, 'floor_collision': 31, 'end_stop': 1}
+C0 ep   4000  train 46.4%  ret    36.8  eps 0.095  start<= 0.8 m air 100%  {'bad_landing': 240, 'success': 232, 'floor_collision': 26, 'end_stop': 2}
+C0 ep   4500  train 50.8%  ret    45.4  eps 0.092  start<= 0.8 m air 100%  {'bad_landing': 210, 'success': 254, 'floor_collision': 33, 'end_stop': 2, 'hard_top_stop': 1}
+   C0 ep 4738: curriculum -> starts within 1.3 m of the target
+C0 ep   5000  train 51.6%  ret    43.2  eps 0.089  start<= 1.3 m air 100%  {'success': 258, 'bad_landing': 193, 'floor_collision': 45, 'end_stop': 3, 'timeout': 1}
+C0 ep   5500  train 45.0%  ret    13.8  eps 0.085  start<= 1.3 m air 100%  {'success': 225, 'bad_landing': 206, 'floor_collision': 64, 'timeout': 1, 'end_stop': 4}
+C0 ep   6000  train 50.6%  ret    38.0  eps 0.082  start<= 1.3 m air 100%  {'bad_landing': 220, 'success': 253, 'floor_collision': 24, 'end_stop': 3}
+C0 ep   6500  train 53.8%  ret    41.8  eps 0.079  start<= 1.3 m air 100%  {'bad_landing': 189, 'success': 269, 'floor_collision': 40, 'end_stop': 2}
+   C0 ep 6572: curriculum -> starts within 2.0 m of the target
+C0 ep   7000  train 45.8%  ret    -1.2  eps 0.076  start<= 2.0 m air 100%  {'success': 229, 'floor_collision': 84, 'bad_landing': 173, 'end_stop': 8, 'timeout': 6}
+C0 ep   7500  train 46.4%  ret     7.5  eps 0.073  start<= 2.0 m air 100%  {'bad_landing': 197, 'success': 232, 'floor_collision': 64, 'end_stop': 5, 'timeout': 2}
+C0 ep   8000  train 50.6%  ret    21.1  eps 0.070  start<= 2.0 m air 100%  {'success': 253, 'floor_collision': 42, 'bad_landing': 200, 'end_stop': 3, 'timeout': 2}
+   C0 ep 8266: curriculum -> starts within 3.3 m of the target
+C0 ep   8500  train 54.6%  ret    16.7  eps 0.067  start<= 3.3 m air 100%  {'success': 273, 'bad_landing': 163, 'floor_collision': 56, 'end_stop': 3, 'timeout': 5}
+C0 ep   9000  train 44.0%  ret   -27.4  eps 0.064  start<= 3.3 m air 100%  {'timeout': 10, 'floor_collision': 105, 'success': 220, 'bad_landing': 161, 'end_stop': 4}
+C0 ep   9500  train 50.0%  ret     0.0  eps 0.060  start<= 3.3 m air 100%  {'floor_collision': 60, 'success': 250, 'bad_landing': 180, 'timeout': 5, 'end_stop': 5}
+   C0 ep 9733: curriculum -> starts within 5.2 m of the target
+C0 ep  10000  train 48.4%  ret   -26.0  eps 0.057  start<= 5.2 m air 100%  {'success': 242, 'bad_landing': 147, 'timeout': 23, 'floor_collision': 79, 'end_stop': 9}
+C0 ep  10500  train 41.2%  ret   -61.9  eps 0.054  start<= 5.2 m air 100%  {'bad_landing': 168, 'floor_collision': 89, 'success': 206, 'timeout': 23, 'end_stop': 14}
+C0 ep  11000  train 34.0%  ret   -91.8  eps 0.051  start<= 5.2 m air 100%  {'bad_landing': 158, 'success': 170, 'floor_collision': 106, 'end_stop': 33, 'timeout': 33}
+C0 ep  11500  train 41.8%  ret   -56.7  eps 0.048  start<= 5.2 m air 100%  {'success': 209, 'floor_collision': 75, 'bad_landing': 144, 'timeout': 13, 'end_stop': 59}
+C0 ep  12000  train 47.6%  ret   -45.9  eps 0.045  start<= 5.2 m air 100%  {'floor_collision': 47, 'success': 238, 'bad_landing': 144, 'end_stop': 53, 'timeout': 18}
+   C0 ep 12255: curriculum -> starts within 8.4 m of the target
+C0 ep  12500  train 48.8%  ret   -44.3  eps 0.042  start<= 8.4 m air 100%  {'bad_landing': 123, 'success': 244, 'end_stop': 50, 'floor_collision': 48, 'timeout': 35}
+C0 ep  13000  train 49.2%  ret   -41.8  eps 0.039  start<= 8.4 m air 100%  {'timeout': 24, 'success': 246, 'bad_landing': 143, 'end_stop': 44, 'floor_collision': 43}
+   C0 ep 13313: curriculum -> starts within 12.0 m of the target
+C0 ep  13500  train 56.6%  ret   -15.8  eps 0.035  start<=12.0 m air 100%  {'success': 283, 'bad_landing': 110, 'floor_collision': 48, 'end_stop': 38, 'timeout': 21}
+   C0 ep 13792: curriculum -> mid-air starts 75%
+C0 ep  14000  train 52.0%  ret   -30.6  eps 0.032  start<=12.0 m air  75%  {'bad_landing': 98, 'success': 260, 'end_stop': 38, 'timeout': 26, 'floor_collision': 78}
+C0 ep  14500  train 45.2%  ret   -36.7  eps 0.029  start<=12.0 m air  75%  {'success': 226, 'floor_collision': 91, 'timeout': 17, 'end_stop': 69, 'bad_landing': 97}
+C0 ep  15000  train 46.4%  ret   -31.7  eps 0.026  start<=12.0 m air  75%  {'floor_collision': 56, 'end_stop': 97, 'success': 232, 'bad_landing': 102, 'timeout': 13}
+C0 ep  15500  train 53.4%  ret   -15.7  eps 0.023  start<=12.0 m air  75%  {'bad_landing': 84, 'success': 267, 'end_stop': 68, 'floor_collision': 63, 'timeout': 18}
+   C0 ep 15750: curriculum -> mid-air starts 50%
+C0 ep  16000  train 53.8%  ret   -38.2  eps 0.020  start<=12.0 m air  50%  {'success': 269, 'end_stop': 83, 'bad_landing': 55, 'floor_collision': 40, 'timeout': 53}
+   C0 ep 16226: curriculum -> mid-air starts 25%
+C0 ep  16500  train 44.0%  ret   -72.1  eps 0.020  start<=12.0 m air  25%  {'timeout': 60, 'end_stop': 92, 'success': 220, 'bad_landing': 56, 'floor_collision': 72}
+C0 ep  17000  train 43.6%  ret   -57.8  eps 0.020  start<=12.0 m air  25%  {'end_stop': 58, 'success': 218, 'bad_landing': 32, 'floor_collision': 167, 'timeout': 25}
+   C0 ep 17264: curriculum -> mid-air starts 0%
+C0 ep  17500  train 65.0%  ret   -39.1  eps 0.020  start<=12.0 m air   0%  alpha 0.085  greedy 70.0% in 42.4s  streak 0/3  {'success': 325, 'floor_collision': 86, 'bad_landing': 33, 'timeout': 37, 'end_stop': 19}
+C0 ep  18000  train 74.8%  ret   -21.0  eps 0.020  start<=12.0 m air   0%  alpha 0.072  greedy 97.5% in 32.6s  streak 1/3  {'success': 374, 'floor_collision': 64, 'timeout': 31, 'bad_landing': 21, 'end_stop': 10}
+C0 ep  18500  train 80.6%  ret    -5.5  eps 0.020  start<=12.0 m air   0%  alpha 0.061  greedy 95.0% in 33.4s  streak 2/3  {'success': 403, 'bad_landing': 29, 'end_stop': 7, 'floor_collision': 40, 'timeout': 21}
+C0 ep  19000  train 80.4%  ret     5.5  eps 0.020  start<=12.0 m air   0%  alpha 0.052  greedy 97.5% in 31.9s  streak 3/3  {'success': 402, 'floor_collision': 53, 'bad_landing': 30, 'timeout': 8, 'end_stop': 7}
+=== C0 converged after 19000 episodes; best greedy 98% ===
+done: 19000 episodes in 7 min. Weights: runs/seed2/final.npz

@@ -60,7 +60,7 @@ class ScenarioConfig:
     x_A_range: tuple = (0.0, 2.5)
     min_travel: float = 4.0          # x_B >= x_A + min_travel
     off_path_gap: tuple = (2.0, 3.0) # S5: free gap between target and first stack [m]
-    fixed_AB: tuple | None = None    # e.g. (0.0, 10.0) for curriculum stage C0
+    fixed_AB: tuple | None = None    # e.g. (0.0, 10.0): every layout uses this A and B
 
 
 def layout_rects(layout: Layout, params: CraneParams) -> tuple:

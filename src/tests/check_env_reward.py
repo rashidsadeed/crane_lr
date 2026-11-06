@@ -64,7 +64,16 @@ check("R6 success 2.5 cm off: r_success + r_precision / 2",
       abs(t["terminal"] - (task.r_success + task.r_precision / 2)) < 1e-9, f"terminal = {t['terminal']}")
 
 r, t = env._reward(s_end, state(10.0, 0.0), (0.0, 0.0), "bad_landing", land)
-check("R7 bad landing: -50", t["terminal"] == -50.0)
+check("R7 bad landing without a ratio: full -50", t["terminal"] == -50.0)
+r, t = env._reward(s_end, state(10.0, 0.0), (0.0, 0.0), "bad_landing", {"err_x": 0.06, "worst_ratio": 1.2})
+check("R7 near miss (20% over a limit): -10", abs(t["terminal"] + 10.0) < 1e-9, f"{t['terminal']}")
+r, t = env._reward(s_end, state(10.0, 0.0), (0.0, 0.0), "bad_landing", {"err_x": 0.5, "worst_ratio": 3.0})
+check("R7 far miss (3x a limit): capped at -50", t["terminal"] == -50.0, f"{t['terminal']}")
+from dataclasses import replace as _replace
+env.task = _replace(task, graded_bad_landing=False)
+r, t = env._reward(s_end, state(10.0, 0.0), (0.0, 0.0), "bad_landing", {"err_x": 0.06, "worst_ratio": 1.2})
+check("R7 graded_bad_landing=False: flat -50", t["terminal"] == -50.0)
+env.task = task
 
 for crash in ("collision", "floor_collision", "end_stop", "hard_top_stop"):
     r, t = env._reward(s, s, (0.0, 0.0), crash)

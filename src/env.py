@@ -43,7 +43,11 @@ class TaskConfig:
     r_success: float = 200.0
     r_precision: float = 20.0
     r_crash: float = -100.0
-    r_bad_landing: float = -50.0
+    r_bad_landing: float = -50.0   # full penalty for a landing far outside the limits
+    graded_bad_landing: bool = True  # scale r_bad_landing by how far the worst criterion is past
+                                     # its limit: x min(1, worst_ratio - 1). A near miss costs ~0,
+                                     # twice the limit or more costs the full -50. False: flat -50
+                                     # (no learning signal between 'just missed' and 'way off').
     max_steps: int = 600
     timeout_is_failure: bool = False  # False: max_steps truncates (no penalty, the agent bootstraps);
                                       # True: a -100 failure. The observation has no clock, so True
@@ -182,6 +186,7 @@ class CraneEnv(gym.Env):
         landing = {"err_x": abs(x_p - self.layout.x_B), "A": A, "v_x": abs(s[1]), "v_land": v_land}
         limits = {"err_x": task.tol_x, "A": task.tol_A, "v_x": task.tol_v, "v_land": task.tol_land}
         landing["failed"] = [k for k, lim in limits.items() if landing[k] > lim]
+        landing["worst_ratio"] = max(landing[k] / lim for k, lim in limits.items())
         if landing["err_x"] > task.far_from_target:
             return "floor_collision", landing
         if not landing["failed"]:
@@ -213,7 +218,10 @@ class CraneEnv(gym.Env):
         if outcome == "success":
             r_term = task.r_success + task.r_precision * (1.0 - landing["err_x"] / task.tol_x)
         elif outcome == "bad_landing":
-            r_term = task.r_bad_landing
+            if task.graded_bad_landing and "worst_ratio" in landing:
+                r_term = task.r_bad_landing * min(1.0, landing["worst_ratio"] - 1.0)
+            else:
+                r_term = task.r_bad_landing
         elif outcome in CRASHES:
             r_term = task.r_crash
         else:

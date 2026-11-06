@@ -1,0 +1,43 @@
+=== stage C0s  (episode 0 of at most 20000) ===
+C0s ep    500  train  0.2%  ret  -224.0  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 185, 'end_stop': 130, 'floor_collision': 77, 'timeout': 106, 'success': 1, 'hard_top_stop': 1}
+C0s ep   1000  train  0.4%  ret  -103.1  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 391, 'floor_collision': 56, 'end_stop': 38, 'timeout': 10, 'hard_top_stop': 3, 'success': 2}
+C0s ep   1500  train  0.0%  ret   -70.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 475, 'floor_collision': 22, 'end_stop': 3}
+C0s ep   2000  train  1.0%  ret   -68.8  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 466, 'floor_collision': 26, 'success': 5, 'end_stop': 3}
+C0s ep   2500  train  0.0%  ret   -68.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 488, 'floor_collision': 12}
+C0s ep   3000  train  0.4%  ret   -69.8  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 477, 'floor_collision': 20, 'end_stop': 1, 'success': 2}
+C0s ep   3500  train  0.0%  ret   -71.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 472, 'floor_collision': 26, 'end_stop': 2}
+C0s ep   4000  train  0.4%  ret   -70.0  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 471, 'floor_collision': 23, 'success': 2, 'end_stop': 4}
+C0s ep   4500  train  0.4%  ret   -68.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 484, 'floor_collision': 13, 'end_stop': 1, 'success': 2}
+C0s ep   5000  train  0.6%  ret   -70.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 470, 'success': 3, 'floor_collision': 25, 'end_stop': 2}
+C0s ep   5500  train  0.6%  ret   -67.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 487, 'floor_collision': 9, 'success': 3, 'end_stop': 1}
+C0s ep   6000  train  1.0%  ret   -70.3  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 480, 'success': 5, 'floor_collision': 15}
+C0s ep   6500  train  0.8%  ret   -69.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 483, 'end_stop': 1, 'success': 4, 'floor_collision': 12}
+C0s ep   7000  train  1.2%  ret   -65.8  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 481, 'floor_collision': 12, 'success': 6, 'end_stop': 1}
+C0s ep   7500  train  1.4%  ret   -69.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 484, 'end_stop': 2, 'success': 7, 'floor_collision': 7}
+C0s ep   8000  train  0.8%  ret   -70.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 481, 'success': 4, 'floor_collision': 14, 'end_stop': 1}
+C0s ep   8500  train  1.0%  ret   -70.0  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 475, 'success': 5, 'floor_collision': 17, 'end_stop': 3}
+C0s ep   9000  train  1.0%  ret   -70.4  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 477, 'floor_collision': 18, 'success': 5}
+C0s ep   9500  train  2.2%  ret   -66.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 477, 'floor_collision': 12, 'success': 11}
+C0s ep  10000  train  1.4%  ret   -68.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 485, 'success': 7, 'floor_collision': 8}
+C0s ep  10500  train  1.4%  ret   -68.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 477, 'floor_collision': 15, 'success': 7, 'end_stop': 1}
+C0s ep  11000  train  4.0%  ret   -62.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 468, 'end_stop': 2, 'success': 20, 'floor_collision': 10}
+C0s ep  11500  train  1.2%  ret   -69.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 481, 'floor_collision': 13, 'success': 6}
+C0s ep  12000  train  3.8%  ret   -62.8  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 468, 'floor_collision': 12, 'success': 19, 'end_stop': 1}
+C0s ep  12500  train  4.0%  ret   -63.2  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 469, 'floor_collision': 11, 'success': 20}
+C0s ep  13000  train  6.2%  ret   -59.1  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 455, 'success': 31, 'floor_collision': 10, 'end_stop': 4}
+C0s ep  13500  train  4.0%  ret   -67.6  eps 0.100  start<= 0.5 m air 100%  {'floor_collision': 13, 'bad_landing': 464, 'success': 20, 'end_stop': 3}
+C0s ep  14000  train  3.6%  ret   -67.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 462, 'floor_collision': 20, 'success': 18}
+C0s ep  14500  train  5.4%  ret   -59.3  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 464, 'success': 27, 'floor_collision': 8, 'end_stop': 1}
+C0s ep  15000  train  3.0%  ret   -69.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 466, 'success': 15, 'floor_collision': 17, 'end_stop': 2}
+C0s ep  15500  train  3.0%  ret   -64.7  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 478, 'success': 15, 'floor_collision': 5, 'end_stop': 2}
+C0s ep  16000  train  6.2%  ret   -57.6  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 462, 'floor_collision': 6, 'success': 31, 'end_stop': 1}
+C0s ep  16500  train  3.4%  ret   -66.1  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 469, 'floor_collision': 13, 'success': 17, 'end_stop': 1}
+C0s ep  17000  train  5.0%  ret   -61.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 465, 'success': 25, 'floor_collision': 9, 'end_stop': 1}
+C0s ep  17500  train  5.6%  ret   -62.5  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 462, 'success': 28, 'floor_collision': 10}
+C0s ep  18000  train  4.6%  ret   -61.1  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 464, 'success': 23, 'floor_collision': 12, 'end_stop': 1}
+C0s ep  18500  train  4.4%  ret   -67.3  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 463, 'success': 22, 'floor_collision': 12, 'end_stop': 3}
+C0s ep  19000  train  4.8%  ret   -60.9  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 463, 'floor_collision': 12, 'success': 24, 'end_stop': 1}
+C0s ep  19500  train  5.0%  ret   -61.5  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 464, 'success': 25, 'floor_collision': 9, 'end_stop': 2}
+C0s ep  20000  train  5.2%  ret   -62.4  eps 0.100  start<= 0.5 m air 100%  {'bad_landing': 460, 'success': 26, 'floor_collision': 14}
+=== C0s reached the episode cap after 20000 episodes; best greedy 0% ===
+done: 20000 episodes in 2 min. Weights: runs_probe/seed1/final.npz

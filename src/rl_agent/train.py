@@ -4,9 +4,13 @@
     python -m rl_agent.train --resume runs/seed1                       # continue after a crash
 
 Per stage:
-  * Reverse curriculum: episodes start with the container hanging near the target; each time
-    the recent success rate passes `advance_at`, starts move further back, then the share of
-    mid-air starts falls until every episode starts on the floor at A.
+  * Reverse curriculum: episodes start with the container hanging near the target; every
+    `adv_every` episodes a greedy check (`adv_n` episodes, current start distribution) runs, and
+    when it reaches `advance_at_greedy` starts move further back, then the share of mid-air
+    starts falls until every episode starts on the floor at A. (--adv-mode train: advance on
+    training success >= `advance_at` instead, the original rule.)
+  * Exploration starts at `eps0` (lower for the stages in STAGE_EPS0, or --eps0) and decays
+    after the first curriculum advance.
   * Convergence: once all starts are at A, the greedy policy is evaluated every `eval_every`
     episodes on a fixed held-out set of the stage's layouts. The stage is converged after
     `patience` evaluations in a row at or above `target`. `max_episodes` is a safety cap.
@@ -36,35 +40,52 @@ from rl_agent.tiles import TileCoder
 LOOSE = dict(tol_x=0.20, tol_A=0.20, tol_v=0.15, tol_land=0.40)
 STAGES = {
     # name: (scenario config, task tolerances)
-    "C0": (ScenarioConfig(weights={"S0": 1.0}, fixed_AB=(0.0, 10.0)), LOOSE),
+    # C0: open floor, random A and B. (A fixed A=0, B=10 made the 40 held-out evaluations one
+    # identical deterministic episode, and the agent memorised that single route.)
+    "C0": (ScenarioConfig(weights={"S0": 1.0}), LOOSE),
     "C1": (ScenarioConfig(weights={"S0": 0.5, "S1": 0.5}, max_high=1, g_min=1.0), LOOSE),
     "C2": (ScenarioConfig(weights={"S1": 0.4, "S2": 0.3, "S3": 0.3}, g_min=1.0), LOOSE),
     "C3": (ScenarioConfig(g_min=0.6), dict(tol_x=0.10, tol_A=0.10, tol_v=0.10, tol_land=0.30)),
     "C4": (ScenarioConfig(), {}),
+    # probe, not part of the default curriculum: C0's open floor with the final (C4) tolerances.
+    # Tests whether the agent can reach 5 cm swing / 5 cm placement at all, without stacks.
+    "C0s": (ScenarioConfig(weights={"S0": 1.0}), {}),
 }
+# Lower starting exploration for stages that only tighten tolerances on layouts the agent
+# already handles (a random 0.3 s action near touchdown ruins a 5 cm landing). Overridden by --eps0.
+STAGE_EPS0 = {"C0s": 0.03, "C4": 0.03}
 
 
 @dataclass
 class Settings:
     alpha: float = 0.1            # step size at the start of every stage
     alpha_decay: float = 0.85     # convergence phase: alpha *= alpha_decay after each evaluation
-    alpha_min: float = 0.02
+    alpha_min: float = 0.005      # low floor so the weights settle once the agent is good (at 0.02
+                                  # greedy success still swung 52-100% between evaluations)
     lam: float = 0.9
-    eps0: float = 0.10            # exploration at the start of each stage
+    eps0: float = 0.10            # exploration at the start of each stage (see STAGE_EPS0)
+    eps0_override: float | None = None   # --eps0: use this in every stage instead
     eps_min: float = 0.02
     hold: int = 3                 # steps a random exploratory action is kept
     q_init: float = 50.0          # optimistic initial Q-value (exploration)
     max_episodes: int = 40_000    # per stage (safety cap)
     eval_every: int = 500
-    eval_n: int = 40
+    eval_n: int = 100             # held-out layouts per evaluation (40 gave +-6 points of noise
+                                  # and favoured lucky checkpoints when picking the best)
     target: float = 0.90          # greedy success needed for convergence
     patience: int = 3             # evaluations in a row at or above target
     checkpoint_minutes: float = 5.0
     snapshot_every: int = 2500    # keep a copy of the weights this often (to replay later)
     dist0: float = 0.5            # reverse curriculum: first start distance [m]
     grow: float = 1.6
-    advance_at: float = 0.6
+    advance_at: float = 0.6       # adv_mode "train": training success (with exploration) needed
     window: int = 200
+    adv_mode: str = "greedy"      # "greedy": advance on a greedy check under the current start
+                                  # distribution; "train": on training success (exploration noise
+                                  # hides progress at strict tolerances, so the curriculum can stall)
+    adv_every: int = 200          # greedy check every this many episodes
+    adv_n: int = 20               # episodes per greedy check
+    advance_at_greedy: float = 0.8
     p_step: float = 0.25
 
 
@@ -76,9 +97,14 @@ class Curriculum:
     recent: deque = field(default_factory=lambda: deque(maxlen=200))
 
     def record(self, success: bool, s: Settings) -> str | None:
+        """adv_mode "train": advance once the recent training success reaches advance_at."""
         self.recent.append(success)
         if len(self.recent) < self.recent.maxlen or np.mean(self.recent) < s.advance_at:
             return None
+        return self.advance(s)
+
+    def advance(self, s: Settings) -> str | None:
+        """Move starts further back; once at full distance, reduce the share of mid-air starts."""
         self.recent.clear()
         if not self.full:
             self.dist *= s.grow
@@ -118,6 +144,21 @@ def evaluate(env, agent, tc, layouts) -> dict:
     return {"success": len(ok) / len(eps),
             "time": float(np.mean([e["time"] for e in ok])) if ok else None,
             "outcomes": dict(Counter(e["outcome"] for e in eps))}
+
+
+def greedy_check(env, agent, tc, n: int, seed0: int) -> float:
+    """Greedy success under the env's current task (the curriculum's start distribution).
+    Fixed seeds, so the result depends only on the weights; the agent's random generator is
+    used only for tie-breaking, and its state is checkpointed, so resumes stay exact."""
+    ok = 0
+    for i in range(n):
+        obs, _ = env.reset(seed=seed0 + i)
+        while True:
+            obs, r, term, trunc, info = env.step(agent.greedy(tc.active(compute_features(obs, env.p))))
+            if term or trunc:
+                ok += info["episode"]["outcome"] == "success"
+                break
+    return ok / n
 
 
 # ------------------------------------------------------------------ checkpoints
@@ -169,10 +210,14 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
             ep = st["ep"]
             # exploration stays at eps0 until the first discovery (first curriculum advance),
             # then decays over the next 40% of the episode cap
+            eps0 = getattr(s, "eps0_override", None)
+            if eps0 is None:
+                eps0 = STAGE_EPS0.get(stage, s.eps0)
             if st.get("ep_adv") is None:
-                agent.epsilon = s.eps0
+                agent.epsilon = eps0
             else:
-                agent.epsilon = max(s.eps_min, s.eps0 * (1 - (ep - st["ep_adv"]) / (0.4 * s.max_episodes)))
+                agent.epsilon = max(min(s.eps_min, eps0),
+                                    eps0 * (1 - (ep - st["ep_adv"]) / (0.4 * s.max_episodes)))
             env.task = replace(base, p_air_start=cur.p_air, air_max_dist=cur.dist)
             # deterministic episode seed (Python's hash() of strings changes between runs)
             obs, info = env.reset(seed=st["seed"] * 10_000_000 + st["stage_i"] * 1_000_000 + ep)
@@ -186,7 +231,17 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
             window.append(e)
             st["ep"] += 1
             st["total_ep"] += 1
-            msg = cur.record(e["outcome"] == "success", s)
+            if s.adv_mode == "train":
+                msg = cur.record(e["outcome"] == "success", s)
+            else:
+                msg = None
+                if not cur.done and st["ep"] % s.adv_every == 0:
+                    seed0 = 10**12 + st["seed"] * 10**10 + st["stage_i"] * 10**9 + st["ep"] * 100
+                    g = greedy_check(env, agent, tc, s.adv_n, seed0)
+                    if g >= s.advance_at_greedy:
+                        msg = cur.advance(s)
+                        if msg:
+                            msg += f"  (greedy check {g:.0%})"
             if msg:
                 if st.get("ep_adv") is None:
                     st["ep_adv"] = st["ep"]
@@ -273,6 +328,10 @@ def main():
     ap.add_argument("--init", default=None, help="start from these weights (e.g. an earlier stage)")
     ap.add_argument("--checkpoint-minutes", type=float, default=None)
     ap.add_argument("--q-init", type=float, default=None, help="optimistic initial Q-value")
+    ap.add_argument("--eps0", type=float, default=None,
+                    help="starting exploration in every stage (default: 0.10, or STAGE_EPS0)")
+    ap.add_argument("--adv-mode", choices=("greedy", "train"), default=None,
+                    help="curriculum advance on a greedy check (default) or on training success")
     args = ap.parse_args()
 
     if args.resume:
@@ -289,10 +348,17 @@ def main():
             s.checkpoint_minutes = args.checkpoint_minutes
         if args.q_init is not None:
             s.q_init = args.q_init
+        if args.eps0 is not None:
+            s.eps0_override = args.eps0
+        if args.adv_mode:
+            s.adv_mode = args.adv_mode
         stages = args.stages.split(",")
         for name in stages:
             assert name in STAGES, f"unknown stage {name}"
         run = pathlib.Path(args.out) / f"seed{args.seed}"
+        if (run / "log.jsonl").exists() or (run / "state.pkl").exists():
+            raise SystemExit(f"{run} already holds a run. Use --resume {run} to continue it, "
+                             f"or a different --out (or move the old folder away) to start fresh.")
         run.mkdir(parents=True, exist_ok=True)
         tc = TileCoder(CraneEnv().p)
         if args.init:

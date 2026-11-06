@@ -1,0 +1,134 @@
+=== stage C0s  (episode 0 of at most 60000) ===
+C0s ep    500  train  0.0%  ret  -241.3  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 167, 'end_stop': 123, 'floor_collision': 84, 'timeout': 126}
+C0s ep   1000  train  0.0%  ret  -143.5  eps 0.030  start<= 0.5 m air 100%  {'floor_collision': 149, 'bad_landing': 280, 'timeout': 17, 'end_stop': 26, 'hard_top_stop': 28}
+C0s ep   1500  train  0.0%  ret   -72.2  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 451, 'floor_collision': 48, 'end_stop': 1}
+C0s ep   2000  train  0.4%  ret   -68.0  eps 0.030  start<= 0.5 m air 100%  {'floor_collision': 31, 'bad_landing': 467, 'success': 2}
+C0s ep   2500  train  0.4%  ret   -65.5  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 484, 'floor_collision': 14, 'success': 2}
+C0s ep   3000  train  0.8%  ret   -64.6  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 477, 'success': 4, 'floor_collision': 19}
+C0s ep   3500  train  3.4%  ret   -61.6  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 461, 'floor_collision': 20, 'success': 17, 'end_stop': 2}
+C0s ep   4000  train  3.2%  ret   -56.9  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 476, 'end_stop': 1, 'success': 16, 'floor_collision': 7}
+C0s ep   4500  train  2.4%  ret   -59.7  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 480, 'success': 12, 'floor_collision': 8}
+C0s ep   5000  train  2.6%  ret   -58.1  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 482, 'success': 13, 'floor_collision': 5}
+C0s ep   5500  train  6.4%  ret   -50.8  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 465, 'success': 32, 'floor_collision': 3}
+C0s ep   6000  train 10.6%  ret   -44.8  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 442, 'success': 53, 'floor_collision': 5}
+C0s ep   6500  train  7.2%  ret   -54.1  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 460, 'success': 36, 'floor_collision': 4}
+C0s ep   7000  train 11.4%  ret   -44.4  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 436, 'success': 57, 'floor_collision': 6, 'end_stop': 1}
+C0s ep   7500  train 12.0%  ret   -44.2  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 430, 'success': 60, 'floor_collision': 10}
+C0s ep   8000  train 14.8%  ret   -44.3  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 419, 'success': 74, 'floor_collision': 6, 'end_stop': 1}
+C0s ep   8500  train 16.6%  ret   -37.8  eps 0.030  start<= 0.5 m air 100%  {'success': 83, 'bad_landing': 408, 'floor_collision': 9}
+C0s ep   9000  train 24.2%  ret   -15.2  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 377, 'success': 121, 'end_stop': 1, 'floor_collision': 1}
+C0s ep   9500  train 28.6%  ret    -8.6  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 353, 'success': 143, 'floor_collision': 4}
+C0s ep  10000  train 26.8%  ret   -15.0  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 361, 'success': 134, 'floor_collision': 4, 'end_stop': 1}
+C0s ep  10500  train 26.8%  ret   -11.6  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 361, 'success': 134, 'floor_collision': 5}
+C0s ep  11000  train 24.6%  ret   -17.8  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 368, 'success': 123, 'floor_collision': 8, 'end_stop': 1}
+C0s ep  11500  train 32.2%  ret     2.8  eps 0.030  start<= 0.5 m air 100%  {'bad_landing': 337, 'success': 161, 'floor_collision': 1, 'end_stop': 1}
+   C0s ep 11600: curriculum -> starts within 0.8 m of the target  (greedy check 80%)
+C0s ep  12000  train 37.6%  ret     5.3  eps 0.030  start<= 0.8 m air 100%  {'bad_landing': 299, 'success': 188, 'floor_collision': 13}
+C0s ep  12500  train 35.0%  ret    -4.9  eps 0.029  start<= 0.8 m air 100%  {'bad_landing': 316, 'success': 175, 'floor_collision': 9}
+   C0s ep 12600: curriculum -> starts within 1.3 m of the target  (greedy check 80%)
+   C0s ep 13000: curriculum -> starts within 2.0 m of the target  (greedy check 80%)
+C0s ep  13000  train 35.2%  ret   -17.3  eps 0.028  start<= 2.0 m air 100%  {'bad_landing': 303, 'success': 176, 'floor_collision': 21}
+C0s ep  13500  train 30.0%  ret   -41.5  eps 0.028  start<= 2.0 m air 100%  {'success': 150, 'bad_landing': 328, 'floor_collision': 21, 'end_stop': 1}
+C0s ep  14000  train 31.0%  ret   -46.0  eps 0.027  start<= 2.0 m air 100%  {'bad_landing': 321, 'success': 155, 'floor_collision': 23, 'end_stop': 1}
+C0s ep  14500  train 37.8%  ret   -23.3  eps 0.026  start<= 2.0 m air 100%  {'floor_collision': 21, 'success': 189, 'bad_landing': 289, 'timeout': 1}
+C0s ep  15000  train 43.6%  ret   -11.5  eps 0.026  start<= 2.0 m air 100%  {'floor_collision': 12, 'bad_landing': 269, 'success': 218, 'end_stop': 1}
+C0s ep  15500  train 43.0%  ret   -15.5  eps 0.025  start<= 2.0 m air 100%  {'bad_landing': 272, 'success': 215, 'timeout': 2, 'floor_collision': 10, 'end_stop': 1}
+C0s ep  16000  train 38.2%  ret   -22.5  eps 0.025  start<= 2.0 m air 100%  {'bad_landing': 299, 'success': 191, 'floor_collision': 10}
+C0s ep  16500  train 44.6%  ret    -5.5  eps 0.024  start<= 2.0 m air 100%  {'success': 223, 'bad_landing': 257, 'floor_collision': 17, 'timeout': 2, 'end_stop': 1}
+   C0s ep 16800: curriculum -> starts within 3.3 m of the target  (greedy check 85%)
+C0s ep  17000  train 49.8%  ret     3.5  eps 0.023  start<= 3.3 m air 100%  {'bad_landing': 239, 'floor_collision': 11, 'success': 249, 'end_stop': 1}
+   C0s ep 17400: curriculum -> starts within 5.2 m of the target  (greedy check 80%)
+C0s ep  17500  train 49.8%  ret   -16.4  eps 0.023  start<= 5.2 m air 100%  {'bad_landing': 234, 'success': 249, 'floor_collision': 15, 'timeout': 2}
+C0s ep  18000  train 53.8%  ret   -25.3  eps 0.022  start<= 5.2 m air 100%  {'success': 269, 'bad_landing': 211, 'floor_collision': 17, 'end_stop': 1, 'timeout': 2}
+C0s ep  18500  train 52.8%  ret   -21.4  eps 0.021  start<= 5.2 m air 100%  {'success': 264, 'bad_landing': 211, 'floor_collision': 21, 'end_stop': 3, 'timeout': 1}
+C0s ep  19000  train 57.2%  ret   -15.6  eps 0.021  start<= 5.2 m air 100%  {'success': 286, 'floor_collision': 24, 'bad_landing': 188, 'timeout': 2}
+   C0s ep 19400: curriculum -> starts within 8.4 m of the target  (greedy check 85%)
+C0s ep  19500  train 60.4%  ret    -6.1  eps 0.020  start<= 8.4 m air 100%  {'success': 302, 'bad_landing': 173, 'floor_collision': 23, 'timeout': 2}
+   C0s ep 20000: curriculum -> starts within 12.0 m of the target  (greedy check 80%)
+C0s ep  20000  train 52.0%  ret   -43.6  eps 0.020  start<=12.0 m air 100%  {'bad_landing': 199, 'success': 260, 'floor_collision': 27, 'timeout': 12, 'end_stop': 2}
+   C0s ep 20200: curriculum -> mid-air starts 75%  (greedy check 80%)
+C0s ep  20500  train 48.2%  ret   -59.8  eps 0.020  start<=12.0 m air  75%  {'success': 241, 'bad_landing': 175, 'floor_collision': 63, 'timeout': 19, 'end_stop': 2}
+C0s ep  21000  train 45.4%  ret   -60.3  eps 0.020  start<=12.0 m air  75%  {'success': 227, 'floor_collision': 74, 'bad_landing': 187, 'timeout': 11, 'end_stop': 1}
+C0s ep  21500  train 51.2%  ret   -46.5  eps 0.020  start<=12.0 m air  75%  {'floor_collision': 67, 'success': 256, 'bad_landing': 153, 'end_stop': 5, 'timeout': 19}
+   C0s ep 21600: curriculum -> mid-air starts 50%  (greedy check 95%)
+C0s ep  22000  train 47.8%  ret   -62.5  eps 0.020  start<=12.0 m air  50%  {'success': 239, 'timeout': 16, 'floor_collision': 65, 'bad_landing': 174, 'end_stop': 6}
+C0s ep  22500  train 50.0%  ret   -61.6  eps 0.020  start<=12.0 m air  50%  {'success': 250, 'floor_collision': 63, 'bad_landing': 154, 'timeout': 23, 'end_stop': 10}
+   C0s ep 22600: curriculum -> mid-air starts 25%  (greedy check 85%)
+C0s ep  23000  train 52.4%  ret   -55.0  eps 0.020  start<=12.0 m air  25%  {'success': 262, 'timeout': 10, 'bad_landing': 165, 'floor_collision': 62, 'end_stop': 1}
+C0s ep  23500  train 52.2%  ret   -50.4  eps 0.020  start<=12.0 m air  25%  {'success': 261, 'bad_landing': 150, 'floor_collision': 80, 'timeout': 8, 'end_stop': 1}
+C0s ep  24000  train 56.2%  ret   -43.4  eps 0.020  start<=12.0 m air  25%  {'bad_landing': 161, 'success': 281, 'floor_collision': 49, 'timeout': 8, 'end_stop': 1}
+C0s ep  24500  train 52.6%  ret   -48.6  eps 0.020  start<=12.0 m air  25%  {'end_stop': 1, 'bad_landing': 186, 'success': 263, 'floor_collision': 46, 'timeout': 4}
+C0s ep  25000  train 52.4%  ret   -47.8  eps 0.020  start<=12.0 m air  25%  {'success': 262, 'bad_landing': 171, 'floor_collision': 58, 'timeout': 8, 'end_stop': 1}
+   C0s ep 25400: curriculum -> mid-air starts 0%  (greedy check 95%)
+C0s ep  25500  train 56.0%  ret   -40.0  eps 0.020  start<=12.0 m air   0%  alpha 0.085  greedy 76.0% in 29.8s  streak 0/3  {'success': 280, 'bad_landing': 162, 'floor_collision': 53, 'end_stop': 1, 'timeout': 4}
+C0s ep  26000  train 54.8%  ret   -48.0  eps 0.020  start<=12.0 m air   0%  alpha 0.072  greedy 76.0% in 31.5s  streak 0/3  {'success': 274, 'floor_collision': 63, 'bad_landing': 153, 'timeout': 8, 'end_stop': 2}
+C0s ep  26500  train 58.2%  ret   -35.9  eps 0.020  start<=12.0 m air   0%  alpha 0.061  greedy 82.0% in 28.7s  streak 0/3  {'floor_collision': 53, 'bad_landing': 148, 'success': 291, 'timeout': 6, 'end_stop': 2}
+C0s ep  27000  train 64.6%  ret   -17.5  eps 0.020  start<=12.0 m air   0%  alpha 0.052  greedy 82.0% in 30.7s  streak 0/3  {'success': 323, 'bad_landing': 135, 'floor_collision': 40, 'timeout': 2}
+C0s ep  27500  train 64.0%  ret   -22.8  eps 0.020  start<=12.0 m air   0%  alpha 0.044  greedy 72.0% in 30.2s  streak 0/3  {'bad_landing': 143, 'success': 320, 'timeout': 4, 'floor_collision': 30, 'end_stop': 3}
+C0s ep  28000  train 57.4%  ret   -32.7  eps 0.020  start<=12.0 m air   0%  alpha 0.038  greedy 76.0% in 27.8s  streak 0/3  {'bad_landing': 154, 'success': 287, 'floor_collision': 54, 'timeout': 5}
+C0s ep  28500  train 62.2%  ret   -21.7  eps 0.020  start<=12.0 m air   0%  alpha 0.032  greedy 76.0% in 26.4s  streak 0/3  {'bad_landing': 153, 'success': 311, 'floor_collision': 35, 'timeout': 1}
+C0s ep  29000  train 64.0%  ret   -15.4  eps 0.020  start<=12.0 m air   0%  alpha 0.027  greedy 87.0% in 27.7s  streak 0/3  {'success': 320, 'bad_landing': 137, 'floor_collision': 41, 'timeout': 1, 'end_stop': 1}
+C0s ep  29500  train 63.0%  ret   -16.9  eps 0.020  start<=12.0 m air   0%  alpha 0.023  greedy 71.0% in 29.6s  streak 0/3  {'bad_landing': 139, 'success': 315, 'floor_collision': 45, 'timeout': 1}
+C0s ep  30000  train 60.8%  ret   -24.4  eps 0.020  start<=12.0 m air   0%  alpha 0.020  greedy 83.0% in 28.7s  streak 0/3  {'success': 304, 'bad_landing': 145, 'floor_collision': 47, 'timeout': 3, 'end_stop': 1}
+C0s ep  30500  train 63.6%  ret   -15.9  eps 0.020  start<=12.0 m air   0%  alpha 0.017  greedy 82.0% in 26.4s  streak 0/3  {'success': 318, 'bad_landing': 136, 'floor_collision': 44, 'timeout': 2}
+C0s ep  31000  train 61.2%  ret   -20.4  eps 0.020  start<=12.0 m air   0%  alpha 0.014  greedy 84.0% in 28.8s  streak 0/3  {'success': 306, 'bad_landing': 156, 'floor_collision': 33, 'timeout': 3, 'end_stop': 2}
+C0s ep  31500  train 65.6%  ret    -8.7  eps 0.020  start<=12.0 m air   0%  alpha 0.012  greedy 82.0% in 28.6s  streak 0/3  {'bad_landing': 136, 'success': 328, 'floor_collision': 34, 'timeout': 2}
+C0s ep  32000  train 66.6%  ret    -8.2  eps 0.020  start<=12.0 m air   0%  alpha 0.010  greedy 86.0% in 27.3s  streak 0/3  {'bad_landing': 124, 'success': 333, 'floor_collision': 40, 'end_stop': 2, 'timeout': 1}
+C0s ep  32500  train 63.4%  ret   -14.4  eps 0.020  start<=12.0 m air   0%  alpha 0.009  greedy 88.0% in 26.9s  streak 0/3  {'success': 317, 'bad_landing': 138, 'floor_collision': 42, 'end_stop': 1, 'timeout': 2}
+C0s ep  33000  train 66.4%  ret    -5.3  eps 0.020  start<=12.0 m air   0%  alpha 0.007  greedy 89.0% in 26.8s  streak 0/3  {'success': 332, 'bad_landing': 135, 'floor_collision': 32, 'timeout': 1}
+C0s ep  33500  train 65.4%  ret    -9.3  eps 0.020  start<=12.0 m air   0%  alpha 0.006  greedy 82.0% in 27.5s  streak 0/3  {'success': 327, 'bad_landing': 133, 'floor_collision': 38, 'timeout': 2}
+C0s ep  34000  train 63.2%  ret   -15.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 91.0% in 26.6s  streak 1/3  {'success': 316, 'bad_landing': 141, 'floor_collision': 37, 'end_stop': 4, 'timeout': 2}
+C0s ep  34500  train 64.6%  ret    -9.0  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 88.0% in 28.2s  streak 0/3  {'bad_landing': 152, 'success': 323, 'floor_collision': 25}
+C0s ep  35000  train 64.6%  ret   -12.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 88.0% in 27.9s  streak 0/3  {'success': 323, 'bad_landing': 139, 'floor_collision': 37, 'timeout': 1}
+C0s ep  35500  train 60.2%  ret   -23.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 81.0% in 27.6s  streak 0/3  {'bad_landing': 138, 'success': 301, 'floor_collision': 61}
+C0s ep  36000  train 63.2%  ret   -15.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 77.0% in 26.6s  streak 0/3  {'success': 316, 'floor_collision': 35, 'bad_landing': 146, 'timeout': 3}
+C0s ep  36500  train 61.8%  ret   -21.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 81.0% in 28.0s  streak 0/3  {'success': 309, 'bad_landing': 152, 'floor_collision': 37, 'end_stop': 1, 'timeout': 1}
+C0s ep  37000  train 63.4%  ret   -17.3  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.6s  streak 0/3  {'bad_landing': 150, 'success': 317, 'floor_collision': 29, 'end_stop': 1, 'timeout': 3}
+C0s ep  37500  train 64.4%  ret   -13.4  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 82.0% in 27.8s  streak 0/3  {'success': 322, 'bad_landing': 138, 'floor_collision': 39, 'timeout': 1}
+C0s ep  38000  train 64.4%  ret   -11.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.7s  streak 0/3  {'success': 322, 'floor_collision': 38, 'bad_landing': 138, 'end_stop': 1, 'timeout': 1}
+C0s ep  38500  train 62.2%  ret   -19.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 85.0% in 27.8s  streak 0/3  {'success': 311, 'floor_collision': 56, 'bad_landing': 132, 'timeout': 1}
+C0s ep  39000  train 65.8%  ret    -9.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 86.0% in 26.5s  streak 0/3  {'bad_landing': 139, 'success': 329, 'floor_collision': 31, 'timeout': 1}
+C0s ep  39500  train 65.8%  ret    -7.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 88.0% in 27.8s  streak 0/3  {'success': 329, 'bad_landing': 137, 'floor_collision': 31, 'timeout': 2, 'end_stop': 1}
+C0s ep  40000  train 66.2%  ret    -7.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 76.0% in 27.2s  streak 0/3  {'floor_collision': 34, 'bad_landing': 134, 'success': 331, 'timeout': 1}
+C0s ep  40500  train 64.8%  ret   -12.4  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.2s  streak 0/3  {'success': 324, 'bad_landing': 144, 'floor_collision': 29, 'end_stop': 2, 'timeout': 1}
+C0s ep  41000  train 65.8%  ret   -12.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 76.0% in 27.0s  streak 0/3  {'success': 329, 'bad_landing': 125, 'floor_collision': 42, 'timeout': 4}
+C0s ep  41500  train 67.2%  ret    -7.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 82.0% in 26.8s  streak 0/3  {'bad_landing': 129, 'success': 336, 'floor_collision': 30, 'timeout': 5}
+C0s ep  42000  train 60.6%  ret   -19.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 89.0% in 26.0s  streak 0/3  {'bad_landing': 167, 'success': 303, 'floor_collision': 28, 'end_stop': 2}
+C0s ep  42500  train 64.8%  ret    -7.2  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 93.0% in 26.8s  streak 1/3  {'success': 324, 'bad_landing': 148, 'timeout': 1, 'floor_collision': 27}
+C0s ep  43000  train 67.6%  ret    -3.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 85.0% in 26.5s  streak 0/3  {'success': 338, 'bad_landing': 139, 'timeout': 1, 'floor_collision': 22}
+C0s ep  43500  train 65.4%  ret    -8.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 81.0% in 26.8s  streak 0/3  {'success': 327, 'bad_landing': 138, 'floor_collision': 32, 'timeout': 2, 'end_stop': 1}
+C0s ep  44000  train 66.2%  ret    -9.0  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 26.4s  streak 0/3  {'success': 331, 'bad_landing': 136, 'floor_collision': 30, 'end_stop': 3}
+C0s ep  44500  train 63.0%  ret   -13.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 83.0% in 26.7s  streak 0/3  {'success': 315, 'bad_landing': 149, 'floor_collision': 33, 'timeout': 3}
+C0s ep  45000  train 63.6%  ret   -12.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 87.0% in 26.8s  streak 0/3  {'success': 318, 'bad_landing': 137, 'floor_collision': 40, 'timeout': 5}
+C0s ep  45500  train 65.2%  ret    -6.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 80.0% in 27.2s  streak 0/3  {'success': 326, 'floor_collision': 37, 'bad_landing': 137}
+C0s ep  46000  train 63.0%  ret   -17.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 89.0% in 26.6s  streak 0/3  {'success': 315, 'bad_landing': 147, 'floor_collision': 35, 'timeout': 2, 'end_stop': 1}
+C0s ep  46500  train 65.4%  ret    -9.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 76.0% in 26.8s  streak 0/3  {'success': 327, 'bad_landing': 130, 'floor_collision': 42, 'timeout': 1}
+C0s ep  47000  train 60.0%  ret   -20.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 86.0% in 25.9s  streak 0/3  {'success': 300, 'bad_landing': 157, 'floor_collision': 41, 'timeout': 1, 'end_stop': 1}
+C0s ep  47500  train 62.0%  ret   -18.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.3s  streak 0/3  {'success': 310, 'floor_collision': 44, 'bad_landing': 140, 'end_stop': 4, 'timeout': 2}
+C0s ep  48000  train 63.6%  ret   -13.2  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 83.0% in 26.7s  streak 0/3  {'success': 318, 'bad_landing': 142, 'floor_collision': 36, 'end_stop': 1, 'timeout': 3}
+C0s ep  48500  train 63.2%  ret   -11.3  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 87.0% in 26.8s  streak 0/3  {'success': 316, 'bad_landing': 137, 'floor_collision': 44, 'timeout': 3}
+C0s ep  49000  train 61.4%  ret   -19.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 26.6s  streak 0/3  {'floor_collision': 32, 'bad_landing': 158, 'success': 307, 'end_stop': 1, 'timeout': 2}
+C0s ep  49500  train 63.2%  ret   -13.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 90.0% in 26.9s  streak 1/3  {'bad_landing': 153, 'success': 316, 'floor_collision': 28, 'timeout': 2, 'end_stop': 1}
+C0s ep  50000  train 65.0%  ret    -9.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 26.2s  streak 0/3  {'bad_landing': 133, 'success': 325, 'floor_collision': 40, 'end_stop': 1, 'timeout': 1}
+C0s ep  50500  train 62.4%  ret   -15.3  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 79.0% in 26.0s  streak 0/3  {'bad_landing': 158, 'success': 312, 'floor_collision': 27, 'end_stop': 3}
+C0s ep  51000  train 64.6%  ret    -9.2  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 87.0% in 27.5s  streak 0/3  {'bad_landing': 138, 'success': 323, 'floor_collision': 37, 'end_stop': 2}
+C0s ep  51500  train 66.0%  ret    -7.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 90.0% in 26.4s  streak 1/3  {'bad_landing': 135, 'success': 330, 'floor_collision': 30, 'end_stop': 3, 'timeout': 2}
+C0s ep  52000  train 63.2%  ret   -11.8  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 85.0% in 26.8s  streak 0/3  {'success': 316, 'floor_collision': 27, 'bad_landing': 152, 'timeout': 4, 'end_stop': 1}
+C0s ep  52500  train 67.2%  ret    -5.0  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 82.0% in 27.1s  streak 0/3  {'bad_landing': 126, 'success': 336, 'floor_collision': 37, 'timeout': 1}
+C0s ep  53000  train 61.8%  ret   -15.9  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 87.0% in 26.5s  streak 0/3  {'success': 309, 'bad_landing': 148, 'floor_collision': 41, 'timeout': 1, 'end_stop': 1}
+C0s ep  53500  train 64.0%  ret   -10.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 85.0% in 26.2s  streak 0/3  {'bad_landing': 138, 'success': 320, 'floor_collision': 42}
+C0s ep  54000  train 64.8%  ret   -10.0  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 86.0% in 26.4s  streak 0/3  {'success': 324, 'bad_landing': 138, 'floor_collision': 35, 'timeout': 3}
+C0s ep  54500  train 62.2%  ret   -15.5  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 88.0% in 26.3s  streak 0/3  {'success': 311, 'floor_collision': 39, 'bad_landing': 149, 'timeout': 1}
+C0s ep  55000  train 60.2%  ret   -20.4  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.0s  streak 0/3  {'success': 301, 'floor_collision': 43, 'bad_landing': 150, 'timeout': 3, 'end_stop': 3}
+C0s ep  55500  train 63.6%  ret   -14.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 91.0% in 27.1s  streak 1/3  {'bad_landing': 149, 'success': 318, 'floor_collision': 30, 'timeout': 3}
+C0s ep  56000  train 64.6%  ret   -11.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 86.0% in 26.9s  streak 0/3  {'bad_landing': 145, 'success': 323, 'floor_collision': 30, 'end_stop': 2}
+C0s ep  56500  train 63.0%  ret   -13.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 80.0% in 26.5s  streak 0/3  {'bad_landing': 150, 'success': 315, 'floor_collision': 33, 'end_stop': 2}
+C0s ep  57000  train 61.6%  ret   -18.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 90.0% in 26.8s  streak 1/3  {'success': 308, 'floor_collision': 39, 'bad_landing': 150, 'timeout': 3}
+C0s ep  57500  train 65.4%  ret   -11.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 27.1s  streak 0/3  {'bad_landing': 138, 'success': 327, 'floor_collision': 34, 'timeout': 1}
+C0s ep  58000  train 62.6%  ret   -15.7  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 82.0% in 26.8s  streak 0/3  {'success': 313, 'bad_landing': 137, 'floor_collision': 47, 'timeout': 3}
+C0s ep  58500  train 64.4%  ret   -13.1  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 85.0% in 26.7s  streak 0/3  {'success': 322, 'bad_landing': 136, 'floor_collision': 39, 'timeout': 3}
+C0s ep  59000  train 65.4%  ret    -9.0  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 79.0% in 26.2s  streak 0/3  {'success': 327, 'bad_landing': 144, 'floor_collision': 28, 'timeout': 1}
+C0s ep  59500  train 64.8%  ret   -13.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 89.0% in 27.2s  streak 0/3  {'success': 324, 'bad_landing': 137, 'floor_collision': 33, 'timeout': 4, 'end_stop': 2}
+C0s ep  60000  train 65.0%  ret   -10.6  eps 0.020  start<=12.0 m air   0%  alpha 0.005  greedy 84.0% in 26.7s  streak 0/3  {'floor_collision': 32, 'success': 325, 'bad_landing': 143}
+=== C0s reached the episode cap after 60000 episodes; best greedy 93% ===
+done: 60000 episodes in 59 min. Weights: runs_probe4/seed1/final.npz

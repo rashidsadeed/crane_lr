@@ -66,6 +66,7 @@ if args.agent or args.progress:
 
     def agent_policy(path):
         agent = SarsaLambda.load(path)
+        tc.check_agent(agent, str(path))
         return lambda obs: ("action", agent.greedy(tc.active(compute_features(obs, p))))
 
     if args.agent:

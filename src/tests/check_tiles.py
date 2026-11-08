@@ -40,7 +40,8 @@ for name, size in zip(tc.group_names, tc.group_sizes):
 # ---------------------------------------------------------------- basic properties
 f = compute_features(np.array([4.0, 0.8, 4.0, -0.2, 0.05, -0.1, 10, 6, 4, 0, 0, 0, 0]), p)
 a = tc.active(f)
-check("K1 73 active tiles, all different", len(a) == 73 and len(set(a)) == 73, f"{len(a)} tiles")
+NA = tc.n_active
+check("K1 97 active tiles, all different", NA == 97 and len(a) == NA and len(set(a)) == NA, f"{len(a)} tiles")
 check("K2 all indices inside the weight vector", a.min() >= 0 and a.max() < tc.n_features,
       f"range {a.min()}..{a.max()} of {tc.n_features}")
 check("K3 bias tile always on", tc.bias_index in a)
@@ -55,16 +56,17 @@ check("K5 every group stays in its own block", ok)
 # ---------------------------------------------------------------- generalisation
 # a tiny change shares almost everything
 near = f.copy(); near[E] += 0.01
-check("G1 tiny change: almost all tiles shared", shared(f, near) >= 66, f"{shared(f, near)} of 73 shared")
+check("G1 tiny change: almost all tiles shared", shared(f, near) >= 0.9 * NA, f"{shared(f, near)} of {NA} shared")
 
 # a big change in e_x and z_b: groups using them share nothing, the other groups are untouched
 far = f.copy(); far[E] = warp(0.3); far[FEATURE_NAMES.index("z_b")] = 0.5
-using = ("travel", "hoist", "path_shape", "landing", "slot")
-other = ("swing", "anti_sway", "approach", "under")
+using = ("travel", "hoist", "path_shape", "landing", "slot", "creep")
+other = ("swing", "anti_sway", "approach", "under", "settle")   # ("side" depends on z_b via c_lat)
 s_using = sum(shared(f, far, g) for g in using)
 s_other = sum(shared(f, far, g) for g in other)
-check("G2 big change: groups using e_x or z_b share nothing", s_using == 0, f"{s_using} of 40 shared")
-check("G2 ... groups not using them are unchanged", s_other == 32, f"{s_other} of 32 shared")
+check("G2 big change: groups using e_x or z_b share nothing", s_using == 0, f"{s_using} of {8 * len(using)} shared")
+check("G2 ... groups not using them are unchanged", s_other == 8 * len(other),
+      f"{s_other} of {8 * len(other)} shared")
 
 # within one group, sharing falls off gradually with distance (coarse generalisation)
 counts = []
@@ -87,7 +89,7 @@ check("R2 ... while the coarse travel group mostly cannot", n_travel >= 5, f"{n_
 # ---------------------------------------------------------------- clipping and coverage
 wild = f.copy(); wild[:] = 99.0
 w = tc.active(wild)
-check("C1 out-of-range values still give valid tiles", len(set(w)) == 73 and w.max() < tc.n_features)
+check("C1 out-of-range values still give valid tiles", len(set(w)) == NA and w.max() < tc.n_features)
 
 env = CraneEnv()
 ctl = BaselineController(p)

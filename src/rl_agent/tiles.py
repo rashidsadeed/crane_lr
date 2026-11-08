@@ -1,8 +1,8 @@
-"""Tile coding: 12 features -> the indices of the active tiles (a sparse binary feature vector).
+"""Tile coding: 16 features -> the indices of the active tiles (a sparse binary feature vector).
 
 Each GROUP tiles a few features together with n_tilings overlapping grids. For every
 grid, a state falls into exactly one tile, so each group contributes n_tilings active
-tiles; with 9 groups x 8 tilings + 1 bias tile, every state has exactly 73 active tiles.
+tiles; with 12 groups x 8 tilings + 1 bias tile, every state has exactly 97 active tiles.
 
     Q(s, a) = sum of w[a, i] over the active tiles i        (a linear function)
 
@@ -32,13 +32,30 @@ GROUPS = (
     # fine grid for the last 0.5 m and the last 2 m of height: precise placement
     ("landing",    (("e_x", 10, (warp(-0.5), warp(0.5))), ("d", 6, None), ("z_b", 6, (0.0, 2.0)))),
     ("slot",       (("g_side", 4, None), ("h_side", 3, None), ("d", 6, None), ("z_b", 6, None))),
+    # Precision groups (added after C3/C4 capped at ~85%/~80%). They come after the original
+    # nine, so the original groups keep their positions in the weight vector.
+    # settle: swing inside +-15 cm / +-25 cm/s. The coarse swing groups put the whole 5 cm
+    #         tolerance band inside about one tile, so 3 cm and 7 cm of swing looked the same.
+    ("settle",     (("d", 8, (warp(-0.15), warp(0.15))), ("v_d", 8, (warp(-0.25), warp(0.25))),
+                    ("L", 3, None))),
+    # creep: last 20 cm of placement and trolley speed within +-0.2 m/s (tolerance 5 cm/s; the
+    #        coarse groups use 0.25 m/s-wide speed tiles), during the last metre of descent.
+    ("creep",      (("e_x", 10, (warp(-0.2), warp(0.2))), ("x_dot", 8, (-0.2, 0.2)),
+                    ("z_b", 4, (0.0, 1.0)))),
+    # side: sideways clearance to a stack beside the container (tight slots, lift-off).
+    # The coarse e_x column separates "beside a stack at the target" (lowering is right) from
+    # "beside a stack at the start" (lowering is a floor collision); without it, a probe agent
+    # carried "lower" from slot landings over to lift-off and set the container back down at A.
+    ("side",       (("g_lat", 8, (0.0, 1.2)), ("c_lat", 4, (-1.5, 0.5)),
+                    ("d_lat", 6, (warp(-0.4), warp(0.4))), ("xd_lat", 4, (-0.5, 0.5)),
+                    ("e_x", 4, (warp(-1.5), warp(1.5))))),
 )
 
 
 @dataclass
 class _Column:
     """One dimension of one group."""
-    feature: int       # index into the 12 features
+    feature: int       # index into the features
     n: int             # tiles across the range
     lo: float
     hi: float
@@ -92,6 +109,15 @@ class TileCoder:
         self.n_features = self.bias_index + 1
         self.n_active = T * len(groups) + 1
         self.group_sizes = sizes * T
+
+    def check_agent(self, agent, source="") -> None:
+        """Refuse weights made for a different tile layout (e.g. the 26,081-tile coder used
+        before the precision groups were added) instead of indexing them wrongly."""
+        if agent.w.shape[1] != self.n_features or agent.n_active != self.n_active:
+            raise SystemExit(
+                f"weights {source} have {agent.w.shape[1]:,} tiles / {agent.n_active} active, the "
+                f"current tile coder has {self.n_features:,} / {self.n_active}: they come from an "
+                f"older feature layout and cannot be used with this code")
 
     def active(self, features: np.ndarray) -> np.ndarray:
         """Indices of the n_active tiles that are on for this feature vector."""

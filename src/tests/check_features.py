@@ -8,8 +8,8 @@ import numpy as np                                                   # noqa: E40
 
 from dynamics import CraneParams                                     # noqa: E402
 from rl_agent.features import (warp, unpack, motion_features, path_features,   # noqa: E402
-                               target_features, compute_features, feature_ranges,
-                               FEATURE_NAMES)
+                               target_features, side_features, compute_features,
+                               feature_ranges, FEATURE_NAMES, G_LAT_OPEN, LAT_DZ)
 
 p = CraneParams()
 TOL = 1e-6
@@ -101,17 +101,45 @@ for name, o, expected in target_cases:
     ok = len(got) == 2 and all(math.isclose(g, e, abs_tol=1e-9) for g, e in zip(got, expected))
     check(f"T {name}", ok, f"-> {tuple(round(g, 5) for g in got)} (expected {expected})")
 
+# ---------------------------------------------------------------- side features (piece 5)
+W = p.w_c
+def zb(l):
+    return unpack(ob(0.0, l, 0.0, 10, []), p)["z_b"]
+q0 = unpack(ob(2.0, 4.5, 0.0, 10, []), p)
+th = 0.05
+d_th = unpack(ob(2.0, 4.5, th, 10, []), p)["d"]          # > 0: container swung to the right
+side_cases = [
+    # name,                                     observation,                          expected
+    ("no stacks: open",                         ob(2.0, 4.5, 0.0, 10, []),            (G_LAT_OPEN, LAT_DZ, 0.0, 0.0)),
+    ("tall stack on the right",                 ob(2.0, 4.5, 0.0, 10, [(5, 4)]),
+        (3.0 - W, zb(4.5) - 4, 0.0, 0.0)),
+    ("stack far below the container ignored",   ob(2.0, 4.5, 0.0, 10, [(5, 1)]),      (G_LAT_OPEN, LAT_DZ, 0.0, 0.0)),
+    ("top just below the container counts",     ob(2.0, 4.5, 0.0, 10, [(5, zb(4.5) - 0.3)]),
+        (3.0 - W, 0.3, 0.0, 0.0)),
+    ("nearest of two; left; swinging away",     ob(2.0, 4.5, th, 10, [(7, 4), (2.0 - W - 0.4 + d_th, 4)]),
+        (0.4, zb(4.5) - 4, warp(-d_th), 0.0)),
+    ("far gap clipped to G_LAT_OPEN",           ob(2.0, 4.5, 0.0, 10, [(9, 4)]),      (G_LAT_OPEN, zb(4.5) - 4, 0.0, 0.0)),
+]
+for name, o, expected in side_cases:
+    got = side_features(unpack(o, p), p)
+    ok = len(got) == 4 and all(math.isclose(g, e, abs_tol=1e-9) for g, e in zip(got, expected))
+    check(f"S {name}", ok, f"-> {tuple(round(g, 5) for g in got)} (expected {tuple(round(e, 5) for e in expected)})")
+qv = unpack(ob(2.0, 4.5, 0.0, 10, [(1.0 - W, 4)]), p); qv["x_dot"] = 0.3
+check("S trolley speed is signed towards the stack (stack left, moving right -> negative)",
+      math.isclose(side_features(qv, p)[3], -0.3), f"-> {side_features(qv, p)[3]}")
+
 # ---------------------------------------------------------------- compute_features (piece 4)
 o = ob(2.0, 4.5, 0.05, 10, [(6, 4)])
 q = unpack(o, p)
 f = compute_features(o, p)
-parts = motion_features(q) + path_features(q, p) + target_features(q, p)
-check("C 12 features, in FEATURE_NAMES order", f.shape == (12,) and len(FEATURE_NAMES) == 12
+parts = motion_features(q) + path_features(q, p) + target_features(q, p) + side_features(q, p)
+NF = len(FEATURE_NAMES)
+check("C 16 features, in FEATURE_NAMES order", f.shape == (16,) and NF == 16
       and np.allclose(f, parts), f"shape {f.shape}")
 
 R = np.array(feature_ranges(p))
 check("C ranges: one (low, high) per feature, low < high",
-      R.shape == (12, 2) and np.all(R[:, 0] < R[:, 1]), f"shape {R.shape}")
+      R.shape == (NF, 2) and np.all(R[:, 0] < R[:, 1]), f"shape {R.shape}")
 
 # every feature stays inside its range over complete baseline episodes, all layout types
 from baseline import BaselineController                              # noqa: E402
@@ -119,7 +147,7 @@ from env import CraneEnv                                             # noqa: E40
 
 env = CraneEnv()
 ctl = BaselineController(p)
-lo, hi = np.full(12, np.inf), np.full(12, -np.inf)
+lo, hi = np.full(NF, np.inf), np.full(NF, -np.inf)
 for seed in range(100):
     obs, _ = env.reset(seed=seed)
     ctl.reset(obs)

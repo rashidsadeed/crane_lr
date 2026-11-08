@@ -46,6 +46,7 @@ class AgentDriver:
 
     def __init__(self, path, tc, p, eps=0.0, hold=3, seed=0):
         self.ag = SarsaLambda.load(path, seed=seed)
+        tc.check_agent(self.ag, str(path))
         self.tc, self.p, self.eps, self.hold = tc, p, eps, hold
         self.rng = np.random.default_rng(seed)
 

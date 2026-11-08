@@ -1,4 +1,4 @@
-"""feature extraction: raw observation (13 values) -> 12 relative features for tile coding"""
+"""feature extraction: raw observation (13 values) -> 16 relative features for tile coding"""
 import math
 import numpy as np
 from dynamics import CraneParams, container_bottom, pendulum_length
@@ -7,9 +7,13 @@ from scenarios import MAX_STACKS, ScenarioConfig
 
 G_NEXT_OPEN = 5.0      # g_next when no stack blocks the way [m]
 G_SIDE_OPEN = 3.0      # g_side when the target has no neighbour within this distance [m]
+G_LAT_OPEN = 2.0       # g_lat when no stack could be hit sideways [m]
+LAT_DZ = 0.5           # stacks whose top is up to this far below the container bottom count for
+                       # g_lat (the container is about to drop below their top) [m]
 
 FEATURE_NAMES = ("e_x", "x_dot", "z_b", "l_dot", "d", "v_d", "L",
-                 "c_path", "g_next", "c_below", "g_side", "h_side")
+                 "c_path", "g_next", "c_below", "g_side", "h_side",
+                 "g_lat", "c_lat", "d_lat", "xd_lat")
 
 
 def warp(u: float) -> float:
@@ -105,6 +109,30 @@ def target_features(q: dict, params: CraneParams) -> tuple:
     return g_side, h_side
 
 
+def side_features(q: dict, params: CraneParams) -> tuple:
+    """f13-f16: g_lat, c_lat, d_lat, xd_lat: sideways clearance to the nearest stack the
+    container could hit (any stack, not only those ahead or next to the target).
+
+    Candidates: stacks whose top is above z_b - LAT_DZ. The nearest (edge to edge) is used.
+    g_lat  = horizontal edge gap container <-> that stack, clipped to [0, G_LAT_OPEN]
+    c_lat  = z_b - its top height (< 0: the container is below its top)
+    d_lat  = swing displacement towards it (warped; > 0: swinging towards the stack)
+    xd_lat = trolley speed towards it
+    No candidate: (G_LAT_OPEN, LAT_DZ, 0, 0).
+    Tight slots and lifting off next to a tall stack caused most C4 collisions; the other
+    features only see stacks ahead on the route (g_next) or next to the target (g_side), and
+    never the gap between the container and a stack beside it.
+    """
+    W, z_b, x_p = params.w_c, q["z_b"], q["x_p"]
+    cand = [(abs(c - x_p) - W, c, top) for c, top in q["stacks"] if top > z_b - LAT_DZ]
+    if not cand:
+        return G_LAT_OPEN, LAT_DZ, 0.0, 0.0
+    gap, c, top = min(cand)
+    sgn = 1.0 if c >= x_p else -1.0
+    return (min(max(gap, 0.0), G_LAT_OPEN), z_b - top,
+            warp(sgn * q["d"]), sgn * q["x_dot"])
+
+
 def feature_ranges(params: CraneParams, max_top: float | None = None) -> tuple:
     """(low, high) per feature, in the same order as FEATURE_NAMES.
     The tile coder spreads its tiles over these ranges and clips values outside them.
@@ -126,10 +154,15 @@ def feature_ranges(params: CraneParams, max_top: float | None = None) -> tuple:
         (0.0, z_max),                                             # c_below
         (0.0, G_SIDE_OPEN),                                       # g_side
         (0.0, max_top),                                           # h_side
+        (0.0, G_LAT_OPEN),                                        # g_lat
+        (-max_top, LAT_DZ),                                       # c_lat
+        (warp(-1.0), warp(1.0)),                                  # d_lat (warped)
+        (-params.vx_max, params.vx_max),                          # xd_lat
     )
 
 
 def compute_features(obs, params: CraneParams) -> np.ndarray:
-    """Raw observation (13) -> the 12 features, as a float array (order: FEATURE_NAMES)."""
+    """Raw observation (13) -> the 16 features, as a float array (order: FEATURE_NAMES)."""
     q = unpack(obs, params)
-    return np.array(motion_features(q) + path_features(q, params) + target_features(q, params))
+    return np.array(motion_features(q) + path_features(q, params) + target_features(q, params)
+                    + side_features(q, params))

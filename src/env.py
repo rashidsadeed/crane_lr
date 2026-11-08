@@ -30,6 +30,17 @@ class TaskConfig:
     liftoff_eps: float = 0.01
     margin: float = 0.10
     clearance: float = 0.30
+    # Shaping funnel: a stack beside the container's path still raises the required height
+    # h_req until the container is clear of it sideways. Weight 1 up to `margin` (the collision
+    # check's own inflation of every stack), fading to 0 over lat_clear + min(lat_k * A, lat_swing_max)
+    # (A = swing amplitude). Without it, h_req ignored stacks the container was not directly over,
+    # so the shaping rewarded descending diagonally into a tight slot and lowering beside a tall
+    # stack inside the 10 cm the collision check treats as solid. Needs margin + lat_clear +
+    # lat_swing_max < g_min, so a container lined up over any legal slot may always descend.
+    funnel: bool = True
+    lat_clear: float = 0.10
+    lat_k: float = 1.0
+    lat_swing_max: float = 0.10
     # Reward balance (gamma = 0.995):
     #   stalling forever costs time_cost / (1 - gamma) = 100 = |r_crash|, so hovering never
     #   beats trying; and r_success > time_cost * 400 steps + |r_crash|, so even a 40 s delivery
@@ -77,6 +88,11 @@ class CraneEnv(gym.Env):
             f"max_stacks = {self.scen_cfg.max_stacks} > {MAX_STACKS} observation slots")
         # touchdown detection relies on the floor being exactly at the lower hoist stop:
         # at l = l_max the hanging container's bottom is at z = 0
+        task = self.task
+        assert not task.funnel or (task.margin + task.lat_clear + task.lat_swing_max
+                                   < self.scen_cfg.g_min), (
+            "shaping funnel wider than the narrowest legal slot gap: lined up over the target, "
+            "the shaping would still forbid descending")
         assert abs(dyn.container_bottom(p.l_max, p)) < 1e-9, (
             f"H - l_max - h_c = {dyn.container_bottom(p.l_max, p)}, must be 0")
         self.action_space = spaces.Discrete(N_ACTIONS)
@@ -193,15 +209,30 @@ class CraneEnv(gym.Env):
             return "success", landing
         return "bad_landing", landing
 
-    def _required_height(self, x_p):
+    def _required_height(self, x_p, A=0.0):
+        """Height the container bottom must reach before the rest of the way is clear.
+        funnel=False: tallest stack overlapping the strip swept from x_p to x_B, + clearance.
+        funnel=True: every stack counts with a weight that is 1 while its sideways gap to that
+        strip is <= margin, and fades linearly to 0 over lat_clear + min(lat_k * A, lat_swing_max)
+        (continuous in x_p and A, so the shaping has no jumps)."""
+        task, half = self.task, self.p.w_c / 2
         stacks = [(st.center, st.n_high * self.p.h_c) for st in self.layout.stacks]
-        ahead = geo.stacks_in_way(x_p, self.layout.x_B, stacks, self.p.w_c)
-        return max(top for _, top in ahead) + self.task.clearance if ahead else 0.0
+        if not task.funnel:
+            ahead = geo.stacks_in_way(x_p, self.layout.x_B, stacks, self.p.w_c)
+            return max(top for _, top in ahead) + task.clearance if ahead else 0.0
+        lo, hi = min(x_p, self.layout.x_B) - half, max(x_p, self.layout.x_B) + half
+        ramp = task.lat_clear + min(task.lat_k * A, task.lat_swing_max)
+        h = 0.0
+        for c, top in stacks:
+            gap = max(c - half - hi, lo - (c + half), 0.0)      # stack edge <-> swept strip
+            w = min(1.0, max(0.0, 1.0 - (gap - task.margin) / ramp))
+            h = max(h, w * (top + task.clearance))
+        return h
 
     def _potential(self, s):
         x_p, _ = dyn.payload_center(s, self.p)
         z_b = dyn.container_bottom(s[2], self.p)
-        h_req = self._required_height(x_p)
+        h_req = self._required_height(x_p, dyn.swing(s, self.p)[2])
         return -(abs(self.layout.x_B - x_p) + max(0.0, h_req - z_b) + max(z_b, h_req))
 
     def _reward(self, s, s_next, acc, outcome, landing=None):

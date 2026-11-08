@@ -10,7 +10,7 @@ Per stage:
     starts falls until every episode starts on the floor at A. (--adv-mode train: advance on
     training success >= `advance_at` instead, the original rule.)
   * Exploration starts at `eps0` (lower for the stages in STAGE_EPS0, or --eps0) and decays
-    after the first curriculum advance.
+    over `eps_decay_episodes` after the first curriculum advance.
   * Convergence: once all starts are at A, the greedy policy is evaluated every `eval_every`
     episodes on a fixed held-out set of the stage's layouts. The stage is converged after
     `patience` evaluations in a row at or above `target`. `max_episodes` is a safety cap.
@@ -68,7 +68,9 @@ class Settings:
     eps_min: float = 0.02
     hold: int = 3                 # steps a random exploratory action is kept
     q_init: float = 50.0          # optimistic initial Q-value (exploration)
-    max_episodes: int = 40_000    # per stage (safety cap)
+    max_episodes: int = 120_000   # per stage (safety cap; C3/C4 still improved at 60k)
+    eps_decay_episodes: int = 24_000   # exploration decays to eps_min over this many episodes after
+                                       # the first curriculum advance (independent of the cap)
     eval_every: int = 500
     eval_n: int = 100             # held-out layouts per evaluation (40 gave +-6 points of noise
                                   # and favoured lucky checkpoints when picking the best)
@@ -191,6 +193,7 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
     s: Settings = st["settings"]
     p = CraneEnv().p
     tc = TileCoder(p)
+    tc.check_agent(agent, str(run))
     agent.explore_hold = s.hold
     last_ckpt = time.time()
 
@@ -209,7 +212,7 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
         while True:
             ep = st["ep"]
             # exploration stays at eps0 until the first discovery (first curriculum advance),
-            # then decays over the next 40% of the episode cap
+            # then decays over the next eps_decay_episodes (old runs: 40% of the cap)
             eps0 = getattr(s, "eps0_override", None)
             if eps0 is None:
                 eps0 = STAGE_EPS0.get(stage, s.eps0)
@@ -217,7 +220,8 @@ def train(run: pathlib.Path, st: dict, agent: SarsaLambda):
                 agent.epsilon = eps0
             else:
                 agent.epsilon = max(min(s.eps_min, eps0),
-                                    eps0 * (1 - (ep - st["ep_adv"]) / (0.4 * s.max_episodes)))
+                                    eps0 * (1 - (ep - st["ep_adv"]) / getattr(
+                                        s, "eps_decay_episodes", 0.4 * s.max_episodes)))
             env.task = replace(base, p_air_start=cur.p_air, air_max_dist=cur.dist)
             # deterministic episode seed (Python's hash() of strings changes between runs)
             obs, info = env.reset(seed=st["seed"] * 10_000_000 + st["stage_i"] * 1_000_000 + ep)

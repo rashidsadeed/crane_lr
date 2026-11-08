@@ -3,7 +3,7 @@
 Follows Sutton & Barto (2018), "Sarsa(lambda) with binary features and linear function
 approximation", section 12.7:
 
-    Q(s, a) = sum_{i in F(s)} w[a, i]                     F(s): the 73 active tiles of s
+    Q(s, a) = sum_{i in F(s)} w[a, i]                     F(s): the 97 active tiles of s
 
     each step, from (S, A) with reward R and next state S':
         z[A, i] = 1               for i in F(S)           replacing traces
@@ -20,7 +20,7 @@ by about alpha_0 * delta.
 Traces are kept sparse: only the (action, tile) pairs touched recently, as two arrays.
 Traces below `trace_min` are dropped (at gamma*lambda = 0.896 that is after ~65 steps),
 so an update costs a few thousand operations instead of one per weight
-(26,081 tiles x 28 actions = 730,268 with the default tile coder and action set).
+(95,633 tiles x 28 actions = 2,677,724 with the default tile coder and action set).
 """
 import numpy as np
 

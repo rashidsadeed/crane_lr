@@ -3,14 +3,21 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.ipynb_checkpoints/
 
-# macOS
+# editors / macOS
 .DS_Store
+.vscode/
+.idea/
 
 # training output (weights, checkpoints, logs, snapshots)
 runs/
 runs_*/
 src/tests/_train_test/
+*.log
+*.npz
+*.pkl
+*.jsonl
 
 # recorded videos from tests/watch.py
 *.mp4
